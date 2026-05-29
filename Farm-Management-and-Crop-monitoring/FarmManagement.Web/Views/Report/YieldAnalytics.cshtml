@@ -1,0 +1,266 @@
+@model FarmManagement.Web.Models.ViewModels.YieldAnalyticsViewModel
+
+@{
+    ViewData["Title"] = "Yield Analytics";
+
+    var totalYield   = Model.TotalYield;
+    var cropGroups   = Model.Records
+        .GroupBy(r => r.PlantingSchedule?.Crop?.CropName ?? "Unknown")
+        .Select(g => new {
+            Crop    = g.Key,
+            Total   = g.Sum(r => r.ActualYieldKg),
+            Count   = g.Count(),
+            Average = g.Average(r => r.ActualYieldKg),
+            Best    = g.Max(r => r.ActualYieldKg),
+            Worst   = g.Min(r => r.ActualYieldKg)
+        })
+        .OrderByDescending(g => g.Total)
+        .ToList();
+
+    var topCrop = cropGroups.FirstOrDefault();
+
+    var palettes = new[] {
+        ("background:#dcfce7","color:#166534","#16a34a"),
+        ("background:#dbeafe","color:#1e40af","#2563eb"),
+        ("background:#fef3c7","color:#92400e","#d97706"),
+        ("background:#ede9fe","color:#5b21b6","#7c3aed"),
+        ("background:#ffedd5","color:#9a3412","#ea580c"),
+        ("background:#ccfbf1","color:#0f766e","#0d9488"),
+    };
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#dcfce7;color:#16a34a;">
+                <i class="bi bi-graph-up-arrow"></i>
+            </span>
+            Yield Analytics
+        </h1>
+        <p>Crop-wise performance, harvest breakdown and yield comparisons.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to Reports
+    </a>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-3">
+        <div class="analytics-summary-card">
+            <div class="analytics-card-label">Total Yield</div>
+            <div class="analytics-card-value" style="color:#16a34a;">@totalYield.ToString("N0") kg</div>
+            <div class="analytics-card-sub">All harvests combined</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="analytics-summary-card blue">
+            <div class="analytics-card-label">Average Yield</div>
+            <div class="analytics-card-value" style="color:#2563eb;">@Model.AverageYield.ToString("N0") kg</div>
+            <div class="analytics-card-sub">Per harvest event</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="analytics-summary-card @(topCrop != null ? "" : "")">
+            <div class="analytics-card-label">Top Crop</div>
+            <div class="analytics-card-value" style="font-size:1.1rem;color:#0d9488;">
+                @(topCrop?.Crop ?? "—")
+            </div>
+            <div class="analytics-card-sub">@(topCrop != null ? topCrop.Total.ToString("N0") + " kg total" : "No data")</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="analytics-summary-card yellow">
+            <div class="analytics-card-label">Harvest Events</div>
+            <div class="analytics-card-value" style="color:#d97706;">@Model.Records.Count()</div>
+            <div class="analytics-card-sub">@cropGroups.Count crop type(s)</div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Records.Any())
+{
+    <div class="row g-4 mb-4">
+
+        <!-- Crop Share Breakdown -->
+        <div class="col-lg-6">
+            <div class="fm-card h-100">
+                <div class="fm-card-header">
+                    <span class="ch-title">
+                        <i class="bi bi-bar-chart-steps" style="color:#16a34a;"></i>
+                        Yield Share by Crop
+                    </span>
+                    <span style="font-size:.72rem;color:var(--muted);">% of total yield</span>
+                </div>
+                <div style="padding:1rem 1.2rem 1.25rem;">
+                    @foreach (var (g, i) in cropGroups.Select((g, i) => (g, i)))
+                    {
+                        var pct = totalYield > 0 ? (double)g.Total / (double)totalYield * 100 : 0;
+                        var pal = palettes[i % palettes.Length];
+                        var barClass = i switch { 1 => "fm-progress-bar-blue", 2 => "fm-progress-bar-yellow", 3 => "fm-progress-bar-purple", 4 => "fm-progress-bar-orange", _ => "" };
+                        <div class="metric-row">
+                            <span class="metric-row-label">
+                                <span class="badge-pill me-1" style="@pal.Item1;@pal.Item2">@g.Crop</span>
+                            </span>
+                            <div class="metric-row-bar">
+                                <div class="fm-progress">
+                                    <div class="fm-progress-bar @barClass" style="width:@pct.ToString("F1")%"></div>
+                                </div>
+                            </div>
+                            <span class="metric-row-value" style="@pal.Item2;min-width:90px;text-align:right;">
+                                @g.Total.ToString("N0") kg
+                                <span style="font-size:.7rem;color:var(--muted);font-weight:500;">(@pct.ToString("F1")%)</span>
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Per-Crop Stats -->
+        <div class="col-lg-6">
+            <div class="fm-card h-100">
+                <div class="fm-card-header">
+                    <span class="ch-title">
+                        <i class="bi bi-table" style="color:#2563eb;"></i>
+                        Crop Performance Summary
+                    </span>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="fm-table">
+                        <thead>
+                            <tr>
+                                <th>Crop</th>
+                                <th>Harvests</th>
+                                <th>Total (kg)</th>
+                                <th>Average (kg)</th>
+                                <th>Best (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (g, i) in cropGroups.Select((g, i) => (g, i)))
+                            {
+                                var pal = palettes[i % palettes.Length];
+                                <tr>
+                                    <td><span class="badge-pill" style="@pal.Item1;@pal.Item2">@g.Crop</span></td>
+                                    <td style="font-weight:600;">@g.Count</td>
+                                    <td style="font-weight:700;color:#16a34a;">@g.Total.ToString("N0")</td>
+                                    <td>@g.Average.ToString("N0")</td>
+                                    <td><span class="badge-pill badge-green">@g.Best.ToString("N0")</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Variance Analysis -->
+    <div class="fm-card mb-4">
+        <div class="fm-card-header">
+            <span class="ch-title">
+                <i class="bi bi-arrow-left-right" style="color:#7c3aed;"></i>
+                Expected vs Actual — Variance Analysis
+            </span>
+            <span style="font-size:.72rem;color:var(--muted);">Positive = above target</span>
+        </div>
+        <div style="padding:1rem 1.2rem 1.25rem;">
+            @foreach (var record in Model.Records.OrderByDescending(r => r.HarvestedDate).Take(8))
+            {
+                var expected = record.PlantingSchedule?.ExpectedYieldKg ?? 0;
+                var actual   = record.ActualYieldKg;
+                var variance = actual - expected;
+                var pctActual = expected > 0 ? (double)actual / (double)expected * 100 : 100;
+                var barPct = Math.Min(pctActual, 150);
+                var isAbove = variance >= 0;
+                <div class="metric-row">
+                    <span class="metric-row-label" style="min-width:140px;">
+                        <div style="font-weight:600;font-size:.82rem;">@(record.PlantingSchedule?.Crop?.CropName ?? "—")</div>
+                        <div style="font-size:.7rem;color:var(--muted);">@record.HarvestedDate.ToString("dd MMM yyyy")</div>
+                    </span>
+                    <div class="metric-row-bar">
+                        <div class="fm-progress">
+                            <div class="fm-progress-bar @(isAbove ? "" : "fm-progress-bar-red")"
+                                 style="width:@(Math.Min((double)barPct,100).ToString("F0"))%"></div>
+                        </div>
+                        <div style="font-size:.67rem;color:var(--muted);margin-top:.18rem;">
+                            Expected: @expected.ToString("N0") kg
+                        </div>
+                    </div>
+                    <span class="metric-row-value" style="min-width:120px;text-align:right;">
+                        <div style="font-weight:700;color:@(isAbove?"#16a34a":"#dc2626");">@actual.ToString("N0") kg</div>
+                        <div>
+                            @if (isAbove) {
+                                <span class="badge-pill badge-green">+@variance.ToString("N0") kg</span>
+                            } else {
+                                <span class="badge-pill badge-red">@variance.ToString("N0") kg</span>
+                            }
+                        </div>
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- Full Harvest Records Table -->
+<div class="fm-card">
+    <div class="fm-card-header">
+        <span class="ch-title">
+            <i class="bi bi-list-ul" style="color:#16a34a;"></i>
+            All Harvest Records
+        </span>
+        <span style="font-size:.78rem;color:var(--muted);">@Model.Records.Count() records</span>
+    </div>
+    @if (!Model.Records.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-basket"></i>
+            <p>No harvest records found yet.</p>
+        </div>
+    }
+    else
+    {
+        <div style="overflow-x:auto;">
+            <table class="fm-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Crop</th>
+                        <th>Field</th>
+                        <th>Harvested</th>
+                        <th>Expected (kg)</th>
+                        <th>Actual (kg)</th>
+                        <th>Variance</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ var sno = 1; }
+                    @foreach (var r in Model.Records.OrderByDescending(r => r.HarvestedDate))
+                    {
+                        var exp = r.PlantingSchedule?.ExpectedYieldKg ?? 0;
+                        var vari = r.ActualYieldKg - exp;
+                        <tr>
+                            <td style="color:var(--muted);font-size:.78rem;">@(sno++)</td>
+                            <td style="font-weight:600;">@(r.PlantingSchedule?.Crop?.CropName ?? "—")</td>
+                            <td>@(r.PlantingSchedule?.Field?.FieldName ?? "—")</td>
+                            <td>@r.HarvestedDate.ToString("dd MMM yyyy")</td>
+                            <td>@exp.ToString("N0") kg</td>
+                            <td style="font-weight:700;color:#16a34a;">@r.ActualYieldKg.ToString("N0") kg</td>
+                            <td>
+                                @if (vari >= 0) { <span class="badge-pill badge-green">+@vari.ToString("N0")</span> }
+                                else            { <span class="badge-pill badge-red">@vari.ToString("N0")</span> }
+                            </td>
+                            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                @(r.Notes ?? "—")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

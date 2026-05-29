@@ -1,0 +1,218 @@
+@model FarmManagement.Web.Models.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- ══ KPI STAT CARDS ══ -->
+<div class="row g-3 mb-4">
+
+    <div class="col-sm-6 col-xl-4">
+        <a asp-controller="Field" asp-action="Index" class="stat-card">
+            <div class="stat-icon" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);box-shadow:0 4px 12px rgba(22,163,74,.2);">
+                <i class="bi bi-map" style="color:#15803d;"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value text-grad-green">@Model.TotalFields</div>
+                <div class="stat-label">Total Fields</div>
+                <div class="stat-trend up"><i class="bi bi-check-circle"></i> All active</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+        <a asp-controller="Crop" asp-action="Index" class="stat-card">
+            <div class="stat-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);box-shadow:0 4px 12px rgba(37,99,235,.18);">
+                <i class="bi bi-flower1" style="color:#1d4ed8;"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value" style="color:var(--blue);">@Model.TotalCrops</div>
+                <div class="stat-label">Total Crops</div>
+                <div class="stat-trend up"><i class="bi bi-arrow-up-right"></i> Growing</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+        <a asp-controller="Pest" asp-action="Index" class="stat-card">
+            <div class="stat-icon" style="background:linear-gradient(135deg,#fee2e2,#fecaca);box-shadow:0 4px 12px rgba(220,38,38,.18);">
+                <i class="bi bi-bug" style="color:#b91c1c;"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value" style="color:var(--red);">@Model.ActivePestIncidents</div>
+                <div class="stat-label">Active Pest Incidents</div>
+                @if (Model.ActivePestIncidents > 0)
+                {
+                    <div class="stat-trend down"><i class="bi bi-exclamation-triangle"></i> Needs attention</div>
+                }
+                else
+                {
+                    <div class="stat-trend up"><i class="bi bi-shield-check"></i> All clear</div>
+                }
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+        <a asp-controller="Resource" asp-action="Index" class="stat-card">
+            <div class="stat-icon" style="background:linear-gradient(135deg,#fef9c3,#fef08a);box-shadow:0 4px 12px rgba(202,138,4,.18);">
+                <i class="bi bi-boxes" style="color:#a16207;"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value" style="color:var(--yellow);">@Model.LowStockResources</div>
+                <div class="stat-label">Low Stock Resources</div>
+                @if (Model.LowStockResources > 0)
+                {
+                    <div class="stat-trend down"><i class="bi bi-cart-x"></i> Restock needed</div>
+                }
+                else
+                {
+                    <div class="stat-trend up"><i class="bi bi-cart-check"></i> Stock healthy</div>
+                }
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+        <a asp-controller="Schedule" asp-action="HarvestList" class="stat-card">
+            <div class="stat-icon" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);box-shadow:0 4px 12px rgba(2,132,199,.18);">
+                <i class="bi bi-calendar-check" style="color:#0369a1;"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value" style="color:#0284c7;">@Model.UpcomingHarvests</div>
+                <div class="stat-label">Upcoming Harvests</div>
+                <div class="stat-trend up"><i class="bi bi-clock-history"></i> Next 30 days</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+        <a asp-controller="Report" asp-action="YieldAnalytics" class="stat-card">
+            <div class="stat-icon" style="background:linear-gradient(135deg,#f3e8ff,#e9d5ff);box-shadow:0 4px 12px rgba(124,58,237,.18);">
+                <i class="bi bi-graph-up-arrow" style="color:#6d28d9;"></i>
+            </div>
+            <div class="stat-body">
+                <div class="stat-value" style="font-size:1.25rem;color:#7c3aed;">
+                    @Model.TotalYieldThisSeason.ToString("N0") kg
+                </div>
+                <div class="stat-label">Total Yield This Year</div>
+                <div class="stat-trend up"><i class="bi bi-bar-chart-line"></i> View analytics</div>
+            </div>
+        </a>
+    </div>
+
+</div>
+
+<!-- ══ ACTIVITY CARDS ══ -->
+<div class="row g-4">
+
+    <!-- Upcoming Schedules -->
+    <div class="col-lg-6">
+        <div class="fm-card h-100">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-calendar3" style="color:var(--blue);"></i>
+                    Upcoming Schedules
+                </span>
+                <a asp-controller="Schedule" asp-action="Index" class="btn-fm btn-outline-fm btn-sm-fm">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            @if (Model.RecentSchedules == null || !Model.RecentSchedules.Any())
+            {
+                <div class="empty-state">
+                    <i class="bi bi-calendar-x"></i>
+                    <p>No upcoming schedules found.</p>
+                </div>
+            }
+            else
+            {
+                <table class="fm-table">
+                    <thead>
+                        <tr>
+                            <th>Crop</th>
+                            <th>Scheduled Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.RecentSchedules)
+                        {
+                            <tr>
+                                <td>
+                                    <span style="display:flex;align-items:center;gap:.55rem;">
+                                        <span class="status-dot status-dot-green"></span>
+                                        <span style="font-weight:700;">@(s.Crop?.CropName ?? "Unknown")</span>
+                                    </span>
+                                </td>
+                                <td style="color:var(--muted);font-size:.82rem;">
+                                    <i class="bi bi-calendar2 me-1" style="color:#2563eb;opacity:.6;"></i>
+                                    @s.ScheduledDate.ToString("dd MMM yyyy")
+                                </td>
+                                <td><span class="badge-pill badge-blue">Scheduled</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <!-- Active Pest Alerts -->
+    <div class="col-lg-6">
+        <div class="fm-card h-100">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-shield-exclamation" style="color:var(--red);"></i>
+                    Pest Alerts
+                    @if (Model.ActivePestIncidents > 0)
+                    {
+                        <span class="badge-pill badge-red ms-1">@Model.ActivePestIncidents active</span>
+                    }
+                </span>
+                <a asp-controller="Pest" asp-action="Index" class="btn-fm btn-outline-fm btn-sm-fm">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            @if (Model.RecentPestAlerts == null || !Model.RecentPestAlerts.Any())
+            {
+                <div class="empty-state">
+                    <i class="bi bi-shield-check" style="color:var(--green);background:var(--green-lt);border-color:var(--green-md);opacity:1;"></i>
+                    <p style="color:var(--green);font-weight:600;">No active pest alerts!</p>
+                    <p style="color:var(--muted);font-size:.78rem;margin-top:.25rem;">Your farm is healthy.</p>
+                </div>
+            }
+            else
+            {
+                <table class="fm-table">
+                    <thead>
+                        <tr>
+                            <th>Pest Name</th>
+                            <th>Affected Crop</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.RecentPestAlerts)
+                        {
+                            <tr>
+                                <td>
+                                    <span style="display:flex;align-items:center;gap:.55rem;">
+                                        <span class="status-dot status-dot-red"></span>
+                                        <span style="font-weight:700;">@p.PestName</span>
+                                    </span>
+                                </td>
+                                <td style="color:var(--muted);font-size:.82rem;">
+                                    <i class="bi bi-flower1 me-1" style="color:#16a34a;opacity:.7;"></i>
+                                    @(p.Crop?.CropName ?? "Unknown")
+                                </td>
+                                <td><span class="badge-pill badge-red">Active</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+</div>

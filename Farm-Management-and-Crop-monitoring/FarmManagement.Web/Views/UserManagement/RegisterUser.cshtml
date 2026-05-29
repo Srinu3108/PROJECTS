@@ -1,0 +1,146 @@
+@model FarmManagement.Web.Models.ViewModels.RegisterViewModel
+@using FarmManagement.Web.Models.Enums
+
+@{
+    ViewData["Title"] = "Register New Member";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fee2e2;color:#dc2626;">
+                <i class="bi bi-person-plus-fill"></i>
+            </span>
+            Register New Member
+        </h1>
+        <p>Create a new user account and assign their role in the system.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to Users
+    </a>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="fm-alert fm-alert-danger mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="fm-card">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-person-fill" style="color:#dc2626;"></i>
+                    New Account Details
+                </span>
+            </div>
+            <div class="fm-card-body">
+                <form asp-action="RegisterUser" method="post" class="fm-form">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="FullName" class="form-label">Full Name</label>
+                            <input asp-for="FullName" class="form-control"
+                                   placeholder="e.g. John Doe" />
+                            <span asp-validation-for="FullName" class="text-danger" style="font-size:.78rem;"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Email" class="form-label">Email Address</label>
+                            <input asp-for="Email" class="form-control" type="email"
+                                   placeholder="e.g. john@farm.com" />
+                            <span asp-validation-for="Email" class="text-danger" style="font-size:.78rem;"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Role" class="form-label">Assign Role</label>
+                            <select asp-for="Role" class="form-select">
+                                <option value="@((int)UserRole.Agronomist)">Agronomist — Pest monitoring &amp; analytics</option>
+                                <option value="@((int)UserRole.Storekeeper)">Storekeeper — Resource &amp; inventory</option>
+                                <option value="@((int)UserRole.FieldSupervisor)">Field Supervisor — Planning &amp; oversight</option>
+                                <option value="@((int)UserRole.Farmer)">Farmer — Crop &amp; field management</option>
+                                <option value="@((int)UserRole.Admin)">Admin — System oversight</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger" style="font-size:.78rem;"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Password" class="form-label">Password</label>
+                            <input asp-for="Password" class="form-control" type="password"
+                                   placeholder="Minimum 6 characters" />
+                            <span asp-validation-for="Password" class="text-danger" style="font-size:.78rem;"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                            <input asp-for="ConfirmPassword" class="form-control" type="password"
+                                   placeholder="Repeat password" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger" style="font-size:.78rem;"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="PasswordHint" class="form-label">Password Hint</label>
+                            <input asp-for="PasswordHint" class="form-control"
+                                   placeholder="e.g. My pet's name + birth year" />
+                            <span asp-validation-for="PasswordHint" class="text-danger" style="font-size:.78rem;"></span>
+                            <small style="color:var(--fm-muted);font-size:.75rem;">
+                                <i class="bi bi-info-circle me-1"></i>This hint helps the user reset their password.
+                            </small>
+                        </div>
+
+                        <div class="col-12 pt-1">
+                            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:.85rem 1rem;font-size:.82rem;color:#15803d;">
+                                <i class="bi bi-info-circle me-1"></i>
+                                The new member will be able to log in immediately using the email and password you set.
+                            </div>
+                        </div>
+
+                        <div class="col-12 d-flex gap-2 pt-1">
+                            <button type="submit" class="btn-fm btn-primary-fm">
+                                <i class="bi bi-person-check"></i> Create Account
+                            </button>
+                            <a asp-action="Index" class="btn-fm btn-outline-fm">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Role reference -->
+        <div class="fm-card mt-3">
+            <div class="fm-card-header">
+                <span class="ch-title"><i class="bi bi-info-circle" style="color:#2563eb;"></i> Role Capabilities</span>
+            </div>
+            <div class="fm-card-body" style="padding:.85rem 1.25rem;">
+                <div class="row g-2">
+                    @{
+                        var roles = new[] {
+                            new { Name="Admin",            Color="#dc2626", Bg="#fef2f2", Desc="Full system access — user management, all farm data, reports, and system settings." },
+                            new { Name="Farmer",           Color="#2563eb", Bg="#eff6ff", Desc="Crop & field management — register crops, assign fields, track growth and status." },
+                            new { Name="Field Supervisor", Color="#7c3aed", Bg="#f5f3ff", Desc="Planning & oversight — create schedules, assign fields, monitor pest and soil data." },
+                            new { Name="Storekeeper",      Color="#ea580c", Bg="#fff7ed", Desc="Resource & inventory — manage stock levels, allocate seeds, fertilizers and equipment." },
+                            new { Name="Agronomist",       Color="#475569", Bg="#f8fafc", Desc="Pest monitoring & analytics — track incidents, view yield reports and farm performance." },
+                        };
+                    }
+                    @foreach (var r in roles)
+                    {
+                        <div class="col-12">
+                            <div style="display:flex;align-items:center;gap:.6rem;padding:.45rem .65rem;background:@r.Bg;border-radius:8px;">
+                                <span class="urole role-@r.Name.ToLower()" style="flex-shrink:0;">@r.Name</span>
+                                <span style="font-size:.78rem;color:#374151;">@r.Desc</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

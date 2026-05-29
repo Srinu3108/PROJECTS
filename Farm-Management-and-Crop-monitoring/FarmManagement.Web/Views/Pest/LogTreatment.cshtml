@@ -1,0 +1,111 @@
+@model FarmManagement.Web.Models.Entities.PestIncident
+
+@{
+    ViewData["Title"] = "Log Treatment";
+    var currentStatus = Model.Status.ToString();
+    var pestBadge = Model.Status switch {
+        FarmManagement.Web.Models.Enums.IncidentStatus.Active     => "badge-red",
+        FarmManagement.Web.Models.Enums.IncidentStatus.Monitoring => "badge-yellow",
+        _                                                          => "badge-green"
+    };
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fef9c3;color:#ca8a04;">
+                <i class="bi bi-capsule"></i>
+            </span>
+            Log Treatment
+        </h1>
+        <p>Update the status and treatment notes for this pest incident.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="fm-card h-100">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-bug" style="color:#dc2626;"></i>
+                    Incident Summary
+                </span>
+            </div>
+            <div class="fm-card-body">
+                <table style="width:100%;font-size:.875rem;">
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.35rem 0;width:45%;">Pest</td>
+                        <td style="font-weight:600;">@Model.PestName</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.35rem 0;">Crop</td>
+                        <td>@(Model.Crop?.CropName ?? "—")</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.35rem 0;">Reported</td>
+                        <td>@Model.ReportedDate.ToString("dd MMM yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.35rem 0;">Status</td>
+                        <td><span class="badge-pill @pestBadge">@Model.Status</span></td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.35rem 0;">Description</td>
+                        <td>@(Model.Description ?? "—")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="fm-card">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-pencil-square" style="color:#ca8a04;"></i>
+                    Update Status & Treatment
+                </span>
+            </div>
+            <div class="fm-card-body fm-form">
+                <form asp-action="UpdateStatus" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.PestIncidentId" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Update Status</label>
+                            @Html.DropDownList("status",
+                                new SelectList(
+                                    new[]
+                                    {
+                                        new { Value = "Active",     Text = "Active"     },
+                                        new { Value = "Monitoring", Text = "Monitoring" },
+                                        new { Value = "Resolved",   Text = "Resolved"   }
+                                    },
+                                    "Value", "Text", currentStatus
+                                ),
+                                new { @class = "form-select form-control" }
+                            )
+                        </div>
+                        <div class="col-12">
+                            <div class="fm-alert fm-alert-warning">
+                                <i class="bi bi-info-circle"></i>
+                                <span>Updating to <strong>Resolved</strong> will mark this incident as closed.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn-fm btn-warn-fm">
+                            <i class="bi bi-check-circle"></i> Save Treatment
+                        </button>
+                        <a asp-action="Index" class="btn-fm btn-ghost-fm">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

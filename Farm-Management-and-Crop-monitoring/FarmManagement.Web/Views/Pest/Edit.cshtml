@@ -1,0 +1,89 @@
+@model FarmManagement.Web.Models.Entities.PestIncident
+@{
+    ViewData["Title"] = "Update Pest Incident";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fee2e2;color:#dc2626;">
+                <i class="bi bi-pencil-square"></i>
+            </span>
+            Update Pest Incident
+        </h1>
+        <p>Update the details for <strong>@Model.PestName</strong>.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="fm-card" style="max-width:720px;">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-bug" style="color:#dc2626;"></i> Incident Details</span>
+    </div>
+    <div class="fm-card-body fm-form">
+        <form asp-action="Edit" asp-route-id="@Model.PestIncidentId" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="PestIncidentId" />
+            <input type="hidden" asp-for="Status" />
+            <input type="hidden" asp-for="ReportedDate" />
+            <div asp-validation-summary="ModelOnly" class="fm-alert fm-alert-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="PestName" class="form-label">Pest Name</label>
+                    <div class="fm-field">
+                        <i class="bi bi-bug fm-fi" style="color:#dc2626;"></i>
+                        <input asp-for="PestName" class="form-control" />
+                    </div>
+                    <span asp-validation-for="PestName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DiseaseName" class="form-label">Disease Name</label>
+                    <div class="fm-field">
+                        <i class="bi bi-virus2 fm-fi" style="color:#dc2626;"></i>
+                        <input asp-for="DiseaseName" class="form-control" />
+                    </div>
+                    <span asp-validation-for="DiseaseName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CropId" class="form-label">Affected Crop</label>
+                    <div class="fm-field">
+                        <i class="bi bi-flower1 fm-fi" style="color:#16a34a;"></i>
+                        <select asp-for="CropId" class="form-select">
+                            <option value="">-- Select Crop --</option>
+                            @if (ViewBag.Crops != null)
+                            {
+                                foreach (var crop in ViewBag.Crops)
+                                {
+                                    <option value="@crop.CropId">@crop.CropName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <span asp-validation-for="CropId" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <div class="fm-field fm-field-ta">
+                        <i class="bi bi-chat-left-text fm-fi"></i>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="fm-actions">
+                <button type="submit" class="btn-fm btn-primary-fm">
+                    <i class="bi bi-check-circle"></i> Save Changes
+                </button>
+                <a asp-action="Index" class="btn-fm btn-ghost-fm">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

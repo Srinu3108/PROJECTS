@@ -1,0 +1,257 @@
+@model IEnumerable<FarmManagement.Web.Models.Entities.AppUser>
+@using FarmManagement.Web.Models.Enums
+@using FarmManagement.Web.Models.Entities
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "User Management";
+    var currentUserId  = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+    var activities     = ViewBag.RecentActivities as IEnumerable<ActivityLog> ?? Enumerable.Empty<ActivityLog>();
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fee2e2;color:#dc2626;">
+                <i class="bi bi-people"></i>
+            </span>
+            User Management
+        </h1>
+        <p>Manage system users, assign roles, and monitor team activity.</p>
+    </div>
+    <a asp-action="RegisterUser" class="btn-fm btn-primary-fm">
+        <i class="bi bi-person-plus"></i> Register Member
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="fm-alert fm-alert-success mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>@TempData["Success"]</span>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="fm-alert fm-alert-danger mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
+<!-- Role stat cards -->
+<div class="row g-3 mb-4">
+    @{
+        var roleGroups = new[] {
+            new { Label = "Admin",            Icon = "bi-shield-fill",      Bg = "#fee2e2", Fg = "#dc2626", Count = Model.Count(u => u.Role == UserRole.Admin) },
+            new { Label = "Farmer",           Icon = "bi-flower1",          Bg = "#dbeafe", Fg = "#2563eb", Count = Model.Count(u => u.Role == UserRole.Farmer) },
+            new { Label = "Field Supervisor", Icon = "bi-clipboard-check",  Bg = "#ede9fe", Fg = "#7c3aed", Count = Model.Count(u => u.Role == UserRole.FieldSupervisor) },
+            new { Label = "Storekeeper",      Icon = "bi-box-seam",         Bg = "#ffedd5", Fg = "#ea580c", Count = Model.Count(u => u.Role == UserRole.Storekeeper) },
+            new { Label = "Agronomist",       Icon = "bi-eyedropper",       Bg = "#f1f5f9", Fg = "#475569", Count = Model.Count(u => u.Role == UserRole.Agronomist) },
+        };
+    }
+    @foreach (var g in roleGroups)
+    {
+        <div class="col-sm-6 col-xl">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:@g.Bg;color:@g.Fg;">
+                    <i class="bi @g.Icon"></i>
+                </div>
+                <div>
+                    <div class="stat-value" style="color:@g.Fg;">@g.Count</div>
+                    <div class="stat-label">@g.Label</div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row g-4">
+
+    <!-- ── Users Table ─────────────────────────────────────────── -->
+    <div class="col-xl-12">
+        <div class="fm-card">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-table" style="color:#dc2626;"></i>
+                    All Members
+                </span>
+                <span style="font-size:.78rem;color:var(--fm-muted);">@Model.Count() accounts</span>
+            </div>
+            @if (!Model.Any())
+            {
+                <div class="empty-state">
+                    <i class="bi bi-people"></i>
+                    <p>No users found.</p>
+                </div>
+            }
+            else
+            {
+                <div style="overflow-x:auto;">
+                    <table class="fm-table">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Change Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ var sno = 1; }
+                            @foreach (var user in Model)
+                            {
+                                var roleCss = user.Role switch {
+                                    UserRole.Admin           => "role-admin",
+                                    UserRole.Farmer          => "role-manager",
+                                    UserRole.FieldSupervisor => "role-supervisor",
+                                    UserRole.Storekeeper     => "role-worker",
+                                    _                        => "role-viewer"
+                                };
+                                var isMe = user.UserId == currentUserId;
+                                <tr>
+                                    <td style="color:var(--fm-muted);font-size:.8rem;">@(sno++)</td>
+                                    <td style="font-weight:600;">
+                                        @user.FullName
+                                        @if (isMe)
+                                        {
+                                            <span class="badge-pill badge-green ms-1" style="font-size:.65rem;">You</span>
+                                        }
+                                    </td>
+                                    <td style="color:var(--fm-muted);">@user.Email</td>
+                                    <td><span class="urole @roleCss">@(user.Role == UserRole.FieldSupervisor ? "Field Supervisor" : user.Role.ToString())</span></td>
+                                    <td>
+                                        @if (user.IsBlocked)
+                                        {
+                                            <span class="badge-pill badge-red"><i class="bi bi-lock-fill me-1"></i>Suspended</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-pill badge-green"><i class="bi bi-unlock-fill me-1"></i>Active</span>
+                                        }
+                                    </td>
+                                    <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        @if (user.Role == UserRole.Admin)
+                                        {
+                                            <span class="badge-pill badge-red" style="font-size:.75rem;"><i class="bi bi-shield-fill me-1"></i>Admin</span>
+                                        }
+                                        else if (!isMe)
+                                        {
+                                            <form asp-action="UpdateRole" method="post"
+                                                  style="display:flex;gap:.4rem;align-items:center;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="userId" value="@user.UserId" />
+                                                <select name="role" class="form-select form-select-sm"
+                                                        style="font-size:.78rem;min-width:130px;border-radius:6px;border:1.5px solid #d1d5db;">
+                                                    <option value="@((int)UserRole.Admin)" selected="@(user.Role == UserRole.Admin)">Admin</option>
+                                                    <option value="@((int)UserRole.Farmer)" selected="@(user.Role == UserRole.Farmer)">Farmer</option>
+                                                    <option value="@((int)UserRole.FieldSupervisor)" selected="@(user.Role == UserRole.FieldSupervisor)">Field Supervisor</option>
+                                                    <option value="@((int)UserRole.Storekeeper)" selected="@(user.Role == UserRole.Storekeeper)">Storekeeper</option>
+                                                    <option value="@((int)UserRole.Agronomist)" selected="@(user.Role == UserRole.Agronomist)">Agronomist</option>
+                                                </select>
+                                                <button type="submit" class="btn-fm btn-primary-fm btn-sm-fm">
+                                                    <i class="bi bi-check"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span style="font-size:.78rem;color:var(--fm-muted);">Cannot edit own</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (user.Role == UserRole.Admin)
+                                        {
+                                            <span class="badge-pill" style="font-size:.72rem;background:#f1f5f9;color:#64748b;">N/A</span>
+                                        }
+                                        else if (!isMe)
+                                        {
+                                            <div class="d-flex gap-1 flex-wrap">
+                                                <form asp-action="ToggleBlock" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="userId" value="@user.UserId" />
+                                                    @if (user.IsBlocked)
+                                                    {
+                                                        <button type="submit" class="btn-fm btn-primary-fm btn-sm-fm" title="Activate this account">
+                                                            <i class="bi bi-unlock"></i> Activate
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="submit" class="btn-fm btn-outline-fm btn-sm-fm"
+                                                                style="border-color:#f59e0b;color:#f59e0b;"
+                                                                title="Temporarily suspend this account"
+                                                                onclick="return confirm('Suspend access for @user.FullName?')">
+                                                            <i class="bi bi-lock"></i> Suspend
+                                                        </button>
+                                                    }
+                                                </form>
+                                                <form asp-action="Delete" method="post" class="d-inline"
+                                                      onsubmit="return confirm('Remove @user.FullName from the system?')">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="userId" value="@user.UserId" />
+                                                    <button type="submit" class="btn-fm btn-danger-fm btn-sm-fm">
+                                                        <i class="bi bi-trash"></i> Remove
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+
+
+</div>
+
+<!-- Role permissions reference -->
+<div class="fm-card mt-4">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-info-circle" style="color:#2563eb;"></i> Role Permissions</span>
+    </div>
+    <div class="fm-card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div style="padding:.85rem;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;">
+                    <div style="font-weight:700;color:#dc2626;margin-bottom:.4rem;"><i class="bi bi-shield-fill me-1"></i> Admin</div>
+                    <p style="font-size:.8rem;color:#374151;margin:0;">Full system access — user management, all farm data, reports, and system settings.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div style="padding:.85rem;background:#eff6ff;border-radius:10px;border:1px solid #bfdbfe;">
+                    <div style="font-weight:700;color:#2563eb;margin-bottom:.4rem;"><i class="bi bi-flower1 me-1"></i> Farmer</div>
+                    <p style="font-size:.8rem;color:#374151;margin:0;">Crop &amp; field management — register crops, assign fields, track growth and status.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div style="padding:.85rem;background:#f5f3ff;border-radius:10px;border:1px solid #ddd6fe;">
+                    <div style="font-weight:700;color:#7c3aed;margin-bottom:.4rem;"><i class="bi bi-clipboard-check me-1"></i> Field Supervisor</div>
+                    <p style="font-size:.8rem;color:#374151;margin:0;">Planning &amp; oversight — create schedules, assign fields to crops, monitor pest and soil data.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div style="padding:.85rem;background:#fff7ed;border-radius:10px;border:1px solid #fed7aa;">
+                    <div style="font-weight:700;color:#ea580c;margin-bottom:.4rem;"><i class="bi bi-box-seam me-1"></i> Storekeeper</div>
+                    <p style="font-size:.8rem;color:#374151;margin:0;">Resource &amp; inventory — manage stock levels, allocate seeds, fertilizers and equipment.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div style="padding:.85rem;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+                    <div style="font-weight:700;color:#475569;margin-bottom:.4rem;"><i class="bi bi-eyedropper me-1"></i> Agronomist</div>
+                    <p style="font-size:.8rem;color:#374151;margin:0;">Pest monitoring &amp; analytics — track incidents, view yield reports and farm performance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

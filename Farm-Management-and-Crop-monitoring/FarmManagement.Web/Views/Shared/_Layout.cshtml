@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — AgroManage</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/farm.css" asp-append-version="true" />
+</head>
+<body>
+
+@{
+    var ctrl   = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+    var isAdmin      = User.IsInRole("Admin");
+    var isFarmer     = User.IsInRole("Farmer");
+    var isSupervisor = User.IsInRole("FieldSupervisor");
+    var isStorekeeper= User.IsInRole("Storekeeper");
+    var isAgronomist = User.IsInRole("Agronomist");
+
+    var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+    var userName = User.Identity?.Name ?? "";
+    var userInitials = userName.Length > 0
+        ? string.Concat(userName.Split(' ').Take(2).Select(w => w[0].ToString().ToUpper()))
+        : "?";
+    var roleCss = userRole.ToLower() switch {
+        "admin"           => "role-admin",
+        "farmer"          => "role-manager",
+        "fieldsupervisor" => "role-supervisor",
+        "storekeeper"     => "role-worker",
+        _                 => "role-viewer"
+    };
+}
+
+<!-- ══════════════════════════════════════════
+     TOP NAVBAR
+══════════════════════════════════════════ -->
+<header class="tn-bar">
+    <div class="tn-inner">
+
+        <!-- Brand -->
+        <a class="tn-brand" asp-controller="Home" asp-action="Index">
+            <div class="tn-brand-icon">
+                <i class="bi bi-tree-fill" style="position:relative;z-index:1;"></i>
+            </div>
+            <div class="tn-brand-text">
+                <span class="tn-brand-name">AgroManage</span>
+                <span class="tn-brand-sub">Farm Management</span>
+            </div>
+        </a>
+
+        <!-- Desktop nav -->
+        <nav class="tn-nav" id="tnDesktopNav">
+
+            <a class="tn-link @(ctrl=="Home" ? "tn-link-active" : "")"
+               asp-controller="Home" asp-action="Index">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+
+            <!-- Farm dropdown -->
+            <div class="tn-drop @(ctrl=="Crop"||ctrl=="Field" ? "tn-drop-active" : "")">
+                <button class="tn-link tn-drop-btn">
+                    <i class="bi bi-tree"></i> Farm <i class="bi bi-chevron-down tn-caret"></i>
+                </button>
+                <div class="tn-drop-menu">
+                    <a class="tn-drop-item @(ctrl=="Crop"?"tn-drop-item-active":"")"
+                       asp-controller="Crop" asp-action="Index">
+                        <i class="bi bi-flower1" style="color:#16a34a;"></i>
+                        <div><div class="tn-drop-title">Crops</div><div class="tn-drop-sub">Manage crop records</div></div>
+                    </a>
+                    <a class="tn-drop-item @(ctrl=="Field"?"tn-drop-item-active":"")"
+                       asp-controller="Field" asp-action="Index">
+                        <i class="bi bi-map" style="color:#0d9488;"></i>
+                        <div><div class="tn-drop-title">Fields</div><div class="tn-drop-sub">Farm field management</div></div>
+                    </a>
+                </div>
+            </div>
+
+            <a class="tn-link @(ctrl=="Schedule" ? "tn-link-active" : "")"
+               asp-controller="Schedule" asp-action="Index">
+                <i class="bi bi-calendar3"></i> Schedules
+            </a>
+
+            <!-- Operations dropdown -->
+            <div class="tn-drop @(ctrl=="Pest"||ctrl=="Resource" ? "tn-drop-active" : "")">
+                <button class="tn-link tn-drop-btn">
+                    <i class="bi bi-gear"></i> Operations <i class="bi bi-chevron-down tn-caret"></i>
+                </button>
+                <div class="tn-drop-menu">
+                    <a class="tn-drop-item @(ctrl=="Pest"?"tn-drop-item-active":"")"
+                       asp-controller="Pest" asp-action="Index">
+                        <i class="bi bi-bug" style="color:#dc2626;"></i>
+                        <div><div class="tn-drop-title">Pest Incidents</div><div class="tn-drop-sub">Track and treat pests</div></div>
+                    </a>
+                    <a class="tn-drop-item @(ctrl=="Resource"?"tn-drop-item-active":"")"
+                       asp-controller="Resource" asp-action="Index">
+                        <i class="bi bi-boxes" style="color:#ea580c;"></i>
+                        <div><div class="tn-drop-title">Resources</div><div class="tn-drop-sub">Inventory &amp; allocation</div></div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Reports dropdown -->
+            <div class="tn-drop @(ctrl=="Report" ? "tn-drop-active" : "")">
+                <button class="tn-link tn-drop-btn">
+                    <i class="bi bi-bar-chart-line"></i> Reports <i class="bi bi-chevron-down tn-caret"></i>
+                </button>
+                <div class="tn-drop-menu">
+                    <a class="tn-drop-item @(ctrl=="Report"&&action=="Index"?"tn-drop-item-active":"")"
+                       asp-controller="Report" asp-action="Index">
+                        <i class="bi bi-clipboard-data" style="color:#7c3aed;"></i>
+                        <div><div class="tn-drop-title">Reports</div><div class="tn-drop-sub">Farm-wide summary</div></div>
+                    </a>
+                    <a class="tn-drop-item @(ctrl=="Report"&&action=="YieldAnalytics"?"tn-drop-item-active":"")"
+                       asp-controller="Report" asp-action="YieldAnalytics">
+                        <i class="bi bi-graph-up-arrow" style="color:#16a34a;"></i>
+                        <div><div class="tn-drop-title">Yield Analytics</div><div class="tn-drop-sub">Crop yield trends</div></div>
+                    </a>
+                </div>
+            </div>
+
+            @if (isAdmin)
+            {
+                <div class="tn-drop @(ctrl=="UserManagement"||ctrl=="Activity" ? "tn-drop-active" : "")">
+                    <button class="tn-link tn-drop-btn">
+                        <i class="bi bi-shield-fill"></i> Admin <i class="bi bi-chevron-down tn-caret"></i>
+                    </button>
+                    <div class="tn-drop-menu">
+                        <a class="tn-drop-item @(ctrl=="UserManagement"?"tn-drop-item-active":"")"
+                           asp-controller="UserManagement" asp-action="Index">
+                            <i class="bi bi-people-fill" style="color:#dc2626;"></i>
+                            <div><div class="tn-drop-title">User Management</div><div class="tn-drop-sub">Accounts &amp; roles</div></div>
+                        </a>
+                        <a class="tn-drop-item @(ctrl=="Activity"?"tn-drop-item-active":"")"
+                           asp-controller="Activity" asp-action="Index">
+                            <i class="bi bi-activity" style="color:#16a34a;"></i>
+                            <div><div class="tn-drop-title">Activity Log</div><div class="tn-drop-sub">System audit trail</div></div>
+                        </a>
+                    </div>
+                </div>
+            }
+
+        </nav>
+
+        <!-- Right side -->
+        <div class="tn-right">
+            <span class="tn-date d-none d-lg-flex">
+                <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dd MMM yyyy")
+            </span>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="tn-drop">
+                    <button class="tn-user-chip tn-drop-btn">
+                        <div class="tn-avatar">@userInitials</div>
+                        <div class="tn-user-info d-none d-md-flex">
+                            <span class="tn-user-name">@userName</span>
+                            <span class="urole @roleCss">@(userRole == "FieldSupervisor" ? "Field Supervisor" : userRole)</span>
+                        </div>
+                        <i class="bi bi-chevron-down tn-caret" style="font-size:.55rem;opacity:.6;"></i>
+                    </button>
+                    <div class="tn-drop-menu tn-drop-menu-end">
+                        <div class="tn-drop-user-header">
+                            <div class="tn-avatar tn-avatar-lg">@userInitials</div>
+                            <div>
+                                <div style="font-weight:700;font-size:.85rem;">@userName</div>
+                                <div style="font-size:.72rem;color:var(--muted);">@(userRole == "FieldSupervisor" ? "Field Supervisor" : userRole)</div>
+                            </div>
+                        </div>
+                        <div style="border-top:1px solid var(--border-lt);margin:.4rem 0;"></div>
+                        <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="m-0">
+                            @Html.AntiForgeryToken()
+                            <button type="button" class="tn-drop-item tn-drop-logout" onclick="confirmLogout()">
+                                <i class="bi bi-box-arrow-left"></i>
+                                <div><div class="tn-drop-title">Sign Out</div><div class="tn-drop-sub">End your session</div></div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login" class="btn-fm btn-outline-fm btn-sm-fm">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+            }
+
+            <!-- Hamburger -->
+            <button class="tn-hamburger" id="tnHamburger" aria-label="Menu">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+
+    </div>
+</header>
+
+<!-- Mobile drawer -->
+<div class="tn-mobile-drawer" id="tnDrawer">
+    <div class="tn-mobile-header">
+        <span style="font-weight:700;color:#fff;">Menu</span>
+        <button class="tn-mobile-close" id="tnDrawerClose"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <nav class="tn-mobile-nav">
+        <a class="tn-mobile-link" asp-controller="Home" asp-action="Index"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <div class="tn-mobile-section">Farm</div>
+        <a class="tn-mobile-link" asp-controller="Crop" asp-action="Index"><i class="bi bi-flower1"></i> Crops</a>
+        <a class="tn-mobile-link" asp-controller="Field" asp-action="Index"><i class="bi bi-grid-3x3-gap"></i> Fields</a>
+        <a class="tn-mobile-link" asp-controller="Schedule" asp-action="Index"><i class="bi bi-calendar3"></i> Schedules</a>
+        <div class="tn-mobile-section">Operations</div>
+        <a class="tn-mobile-link" asp-controller="Pest" asp-action="Index"><i class="bi bi-bug"></i> Pest Incidents</a>
+        <a class="tn-mobile-link" asp-controller="Resource" asp-action="Index"><i class="bi bi-box-seam"></i> Resources</a>
+        <div class="tn-mobile-section">Analytics</div>
+        <a class="tn-mobile-link" asp-controller="Report" asp-action="Index"><i class="bi bi-bar-chart-line"></i> Reports</a>
+        <a class="tn-mobile-link" asp-controller="Report" asp-action="YieldAnalytics"><i class="bi bi-graph-up-arrow"></i> Yield Analytics</a>
+        @if (isAdmin)
+        {
+            <div class="tn-mobile-section">Administration</div>
+            <a class="tn-mobile-link" asp-controller="UserManagement" asp-action="Index"><i class="bi bi-people"></i> Users</a>
+            <a class="tn-mobile-link" asp-controller="Activity" asp-action="Index"><i class="bi bi-journal-text"></i> Activity Log</a>
+        }
+    </nav>
+</div>
+<div class="tn-mobile-overlay" id="tnOverlay"></div>
+
+<!-- ══════════════════════════════════════════
+     PAGE BODY
+══════════════════════════════════════════ -->
+<div class="page-wrapper">
+
+    <!-- Breadcrumb strip -->
+    <div class="breadcrumb-strip">
+        <span class="breadcrumb-home"><i class="bi bi-house-fill"></i></span>
+        <i class="bi bi-chevron-right breadcrumb-sep"></i>
+        <span class="breadcrumb-page">@ViewData["Title"]</span>
+    </div>
+
+    <main class="page-main">
+        @RenderBody()
+    </main>
+
+    <footer class="page-footer">
+        <span>&copy; @DateTime.Now.Year AgroManage — Farm Management System</span>
+        <span>Built with ASP.NET Core 10</span>
+    </footer>
+</div>
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border:none;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+            <div class="modal-body text-center p-4">
+                <div style="width:54px;height:54px;background:#fee2e2;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:.75rem;">
+                    <i class="bi bi-box-arrow-left" style="font-size:1.35rem;color:#dc2626;"></i>
+                </div>
+                <h6 class="fw-bold mb-1">Sign out?</h6>
+                <p class="text-muted small mb-3">You will be returned to the login screen.</p>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button type="button" class="btn btn-light px-4 rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger px-4 rounded-3"
+                            onclick="document.getElementById('logoutForm').submit();">Sign out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+(function () {
+    // ── Desktop dropdowns ──
+    document.querySelectorAll('.tn-drop-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var parent = this.closest('.tn-drop');
+            var isOpen = parent.classList.contains('open');
+            document.querySelectorAll('.tn-drop.open').forEach(function (d) { d.classList.remove('open'); });
+            if (!isOpen) parent.classList.add('open');
+        });
+    });
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.tn-drop.open').forEach(function (d) { d.classList.remove('open'); });
+    });
+
+    // ── Mobile drawer ──
+    var drawer  = document.getElementById('tnDrawer');
+    var overlay = document.getElementById('tnOverlay');
+    var burger  = document.getElementById('tnHamburger');
+    var closeBtn= document.getElementById('tnDrawerClose');
+
+    function openDrawer()  { drawer.classList.add('open');  overlay.classList.add('visible'); }
+    function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('visible'); }
+
+    if (burger)   burger.addEventListener('click',   openDrawer);
+    if (closeBtn) closeBtn.addEventListener('click',  closeDrawer);
+    if (overlay)  overlay.addEventListener('click',   closeDrawer);
+})();
+
+function confirmLogout() {
+    new bootstrap.Modal(document.getElementById('logoutModal')).show();
+}
+</script>
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

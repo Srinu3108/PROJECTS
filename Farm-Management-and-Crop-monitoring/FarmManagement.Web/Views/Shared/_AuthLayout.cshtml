@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — AgroManage</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; font-family: 'Inter', 'Segoe UI', sans-serif; overflow: hidden; }
+
+        /* ════════════════════════════════════════
+           SPLIT LAYOUT
+        ════════════════════════════════════════ */
+        .auth-split {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ── LEFT: Photo panel ── */
+        .auth-photo {
+            flex: 0 0 52%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* The actual photo */
+        .auth-photo-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            filter: brightness(.92) saturate(1.08);
+            transition: transform 8s ease;
+        }
+        .auth-photo-img:hover { transform: scale(1.03); }
+
+        /* Gradient overlays for text legibility */
+        .auth-photo-grad-top {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 45%;
+            background: linear-gradient(to bottom, rgba(5,12,6,.72) 0%, transparent 100%);
+            z-index: 1;
+        }
+        .auth-photo-grad-bot {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 55%;
+            background: linear-gradient(to top, rgba(5,15,7,.88) 0%, rgba(5,15,7,.55) 45%, transparent 100%);
+            z-index: 1;
+        }
+
+        /* Brand in top-left of photo */
+        .auth-photo-brand {
+            position: absolute;
+            top: 2rem; left: 2.2rem;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+        }
+        .auth-photo-logo {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, #15803d, #4ade80);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: #fff;
+            box-shadow: 0 4px 20px rgba(0,0,0,.35);
+        }
+        .auth-photo-logo-name {
+            font-size: 1.05rem; font-weight: 900; color: #fff;
+            letter-spacing: -.02em;
+            text-shadow: 0 1px 8px rgba(0,0,0,.4);
+        }
+        .auth-photo-logo-sub {
+            font-size: .58rem; color: rgba(255,255,255,.55);
+            text-transform: uppercase; letter-spacing: .1em;
+            margin-top: 1px;
+        }
+
+        /* Caption at bottom of photo */
+        .auth-photo-caption {
+            position: absolute;
+            bottom: 2.5rem; left: 2.2rem; right: 2.2rem;
+            z-index: 2;
+        }
+        .auth-photo-tag {
+            display: inline-flex; align-items: center; gap: .35rem;
+            font-size: .65rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .12em;
+            color: #4ade80;
+            margin-bottom: .6rem;
+        }
+        .auth-photo-tag::before {
+            content: '';
+            display: inline-block;
+            width: 22px; height: 2px;
+            background: #4ade80;
+            border-radius: 2px;
+        }
+        .auth-photo-title {
+            font-size: 1.95rem; font-weight: 900;
+            color: #fff; line-height: 1.18;
+            letter-spacing: -.035em;
+            margin-bottom: .9rem;
+            text-shadow: 0 2px 16px rgba(0,0,0,.4);
+        }
+        .auth-photo-title span {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Feature pills */
+        .auth-photo-pills {
+            display: flex; gap: .5rem; flex-wrap: wrap;
+        }
+        .auth-pill {
+            display: inline-flex; align-items: center; gap: .35rem;
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.2);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: .3rem .8rem;
+            font-size: .71rem; font-weight: 600;
+            color: rgba(255,255,255,.9);
+        }
+        .auth-pill i { font-size: .78rem; }
+
+        /* ── RIGHT: Form panel ── */
+        .auth-form-panel {
+            flex: 1;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 2rem;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        /* Subtle dot pattern on right panel */
+        .auth-form-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#d0dae6 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: .5;
+            pointer-events: none;
+        }
+
+        .auth-form-inner {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Mobile brand (hidden on desktop) */
+        .auth-mobile-brand {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: .65rem;
+            margin-bottom: 1.8rem;
+            text-align: center;
+        }
+
+        /* ── Form card ── */
+        .auth-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08), 0 1px 4px rgba(0,0,0,.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .auth-card-body   { padding: 2rem 2rem 1.5rem; }
+        .auth-card-footer {
+            background: #f8fafc;
+            border-top: 1px solid #e9ecef;
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: .875rem;
+        }
+
+        /* ── Form typography ── */
+        .auth-card-title {
+            font-size: 1.35rem; font-weight: 800;
+            color: #0f172a; letter-spacing: -.02em; margin-bottom: .25rem;
+        }
+        .auth-card-sub   { font-size: .82rem; color: #64748b; margin-bottom: 1.6rem; }
+        .form-label      { font-weight: 600; font-size: .8rem; color: #344054; margin-bottom: .35rem; }
+
+        /* ── Inputs ── */
+        .input-icon-wrap { position: relative; }
+        .input-icon-wrap .input-icon-left {
+            position: absolute; left: .85rem; top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8; font-size: .9rem; pointer-events: none;
+        }
+        .input-icon-wrap input,
+        .input-icon-wrap select { padding-left: 2.4rem; }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            padding: .6rem .9rem;
+            font-size: .875rem;
+            background: #fafcff;
+            color: #0f172a;
+            transition: border-color .18s, box-shadow .18s, background .18s;
+            width: 100%;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22,163,74,.12);
+            outline: none;
+            background: #fff;
+        }
+        .form-control:hover:not(:focus) { border-color: #c0cdd9; }
+        .form-control::placeholder       { color: #b0bec8; }
+
+        /* ── Submit button ── */
+        .btn-auth {
+            background: linear-gradient(135deg, #15803d 0%, #16a34a 55%, #22c55e 100%);
+            border: none; border-radius: 10px;
+            color: #fff; font-weight: 700; font-size: .9rem;
+            padding: .72rem; width: 100%;
+            transition: transform .14s, box-shadow .14s;
+            box-shadow: 0 4px 14px rgba(22,163,74,.35);
+            display: flex; align-items: center; justify-content: center; gap: .45rem;
+            letter-spacing: .01em; cursor: pointer;
+        }
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(22,163,74,.45);
+            color: #fff;
+        }
+
+        /* ── Footer links ── */
+        .auth-footer-text { color: #64748b; }
+        .auth-footer-link { color: #16a34a; font-weight: 700; text-decoration: none; }
+        .auth-footer-link:hover { text-decoration: underline; color: #15803d; }
+
+        /* ── Role badge chips ── */
+        .field-tag {
+            display: inline-flex; align-items: center; gap: .25rem;
+            font-size: .7rem; font-weight: 600;
+            padding: .2rem .55rem; border-radius: 20px; margin: .1rem;
+        }
+
+        /* ── Password toggle ── */
+        .pw-toggle {
+            position: absolute; right: .85rem; top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer; color: #94a3b8; font-size: .95rem;
+        }
+        .pw-toggle:hover { color: #64748b; }
+
+        /* ════════════════════════════════════════
+           RESPONSIVE
+        ════════════════════════════════════════ */
+        @@media (max-width: 900px) {
+            body { overflow: auto; }
+            .auth-split { flex-direction: column; height: auto; min-height: 100vh; }
+            .auth-photo  { display: none; }
+            .auth-form-panel {
+                flex: 1;
+                background: linear-gradient(160deg, #041008 0%, #071c0b 30%, #0a2810 100%);
+                padding: 2.5rem 1.5rem;
+            }
+            .auth-form-panel::before { display: none; }
+            .auth-mobile-brand { display: flex; }
+            .auth-card { box-shadow: 0 8px 32px rgba(0,0,0,.35); }
+        }
+
+        @@media (max-width: 480px) {
+            .auth-card-body   { padding: 1.5rem 1.4rem 1.2rem; }
+            .auth-card-footer { padding: .9rem 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="auth-split">
+
+    <!-- ══════════════════════════════════════
+         LEFT — Photo Panel
+    ══════════════════════════════════════ -->
+    <div class="auth-photo">
+        <img class="auth-photo-img"
+             src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1080&q=80"
+             alt="Farm fields at sunset" />
+        <div class="auth-photo-grad-top"></div>
+        <div class="auth-photo-grad-bot"></div>
+
+        <!-- Brand -->
+        <div class="auth-photo-brand">
+            <div class="auth-photo-logo"><i class="bi bi-tree-fill"></i></div>
+            <div>
+                <div class="auth-photo-logo-name">AgroManage</div>
+                <div class="auth-photo-logo-sub">Farm Management System</div>
+            </div>
+        </div>
+
+        <!-- Bottom caption -->
+        <div class="auth-photo-caption">
+            <div class="auth-photo-tag">Smart Farming Platform</div>
+            <div class="auth-photo-title">
+                Grow smarter,<br>harvest <span>better</span>
+            </div>
+            <div class="auth-photo-pills">
+                <span class="auth-pill"><i class="bi bi-graph-up-arrow"></i> Yield Analytics</span>
+                <span class="auth-pill"><i class="bi bi-shield-check"></i> Pest Monitoring</span>
+                <span class="auth-pill"><i class="bi bi-boxes"></i> Inventory</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         RIGHT — Form Panel
+    ══════════════════════════════════════ -->
+    <div class="auth-form-panel">
+
+        <!-- Mobile brand (shown when photo panel is hidden) -->
+        <div class="auth-mobile-brand">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,#15803d,#4ade80);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;">
+                <i class="bi bi-tree-fill"></i>
+            </div>
+            <div style="line-height:1.25;text-align:left;">
+                <div style="font-size:.95rem;font-weight:900;color:#fff;">AgroManage</div>
+                <div style="font-size:.58rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;">Farm System</div>
+            </div>
+        </div>
+
+        <div class="auth-form-inner">
+            @RenderBody()
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+function togglePassword(inputId, iconId) {
+    var input = document.getElementById(inputId);
+    var icon  = document.getElementById(iconId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('bi-eye-slash', 'bi-eye');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('bi-eye', 'bi-eye-slash');
+    }
+}
+</script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

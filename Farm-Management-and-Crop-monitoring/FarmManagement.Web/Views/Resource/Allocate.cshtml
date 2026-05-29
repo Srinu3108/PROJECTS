@@ -1,0 +1,139 @@
+@{
+    ViewData["Title"] = "Allocate Resource";
+    var resource = ViewBag.Resource as FarmManagement.Web.Models.Entities.Resource;
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#ffedd5;color:#ea580c;">
+                <i class="bi bi-arrow-right-circle"></i>
+            </span>
+            Allocate Resource
+        </h1>
+        <p>Assign stock from inventory to a planting schedule.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to Inventory
+    </a>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="fm-alert fm-alert-danger mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="fm-card h-100">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-box-seam" style="color:#ea580c;"></i>
+                    Resource Details
+                </span>
+            </div>
+            <div class="fm-card-body">
+                @if (resource != null)
+                {
+                    <table style="width:100%;font-size:.875rem;">
+                        <tr>
+                            <td style="color:var(--fm-muted);padding:.35rem 0;width:45%;">Name</td>
+                            <td style="font-weight:600;">@resource.Name</td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--fm-muted);padding:.35rem 0;">Type</td>
+                            <td><span class="badge-pill badge-gray">@resource.Type</span></td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--fm-muted);padding:.35rem 0;">Available</td>
+                            <td style="font-weight:700;color:@(resource.Quantity <= 10 ? "#dc2626" : "#16a34a");">
+                                @resource.Quantity @resource.Unit
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color:var(--fm-muted);padding:.35rem 0;">Last Updated</td>
+                            <td>@resource.LastUpdated.ToString("dd MMM yyyy")</td>
+                        </tr>
+                    </table>
+
+                    @if (resource.Quantity <= 10)
+                    {
+                        <div class="fm-alert fm-alert-warning mt-3">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <span>Low stock — allocate carefully.</span>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="fm-card">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-plus-circle" style="color:#16a34a;"></i>
+                    Allocate to Schedule
+                </span>
+            </div>
+            <div class="fm-card-body fm-form">
+                <form asp-action="Allocate" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="resourceId" value="@resource?.ResourceId" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Planting Schedule <span class="text-danger">*</span></label>
+                            <select name="scheduleId" class="form-select" required>
+                                <option value="">-- Select Schedule --</option>
+                                @if (ViewBag.Schedules != null)
+                                {
+                                    @foreach (var schedule in ViewBag.Schedules)
+                                    {
+                                        <option value="@schedule.ScheduleId">
+                                            @schedule.Crop?.CropName — @schedule.ScheduledDate.ToString("dd MMM yyyy")
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="number" name="qty" class="form-control"
+                                       min="0.1" step="0.1" max="@resource?.Quantity"
+                                       placeholder="e.g. 25.5" required />
+                                <span class="input-group-text">@(resource?.Unit ?? "units")</span>
+                            </div>
+                            <small style="color:var(--fm-muted);font-size:.78rem;">
+                                Max available: @resource?.Quantity @resource?.Unit
+                            </small>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+                            <textarea name="notes" class="form-control" rows="3"
+                                      placeholder="Optional — describe how this resource will be used..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="fm-alert fm-alert-success">
+                                <i class="bi bi-info-circle"></i>
+                                <span>Allocating will deduct the entered quantity from available stock and link it to the selected schedule.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn-fm btn-primary-fm"
+                                @(resource?.Quantity <= 0 ? "disabled" : "")>
+                            <i class="bi bi-check-circle"></i> Confirm Allocation
+                        </button>
+                        <a asp-action="Index" class="btn-fm btn-ghost-fm">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

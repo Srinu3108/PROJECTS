@@ -1,0 +1,145 @@
+@model FarmManagement.Web.Models.Entities.PestIncident
+@{
+    ViewData["Title"] = "Pest Incident Details";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fee2e2;color:#dc2626;">
+                <i class="bi bi-bug"></i>
+            </span>
+            Incident Details
+        </h1>
+        <p>Viewing details for <strong>@Model.PestName</strong>.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="fm-card" style="max-width:720px;">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-info-circle" style="color:#dc2626;"></i> @Model.PestName</span>
+    </div>
+    <div class="fm-card-body">
+        <table class="fm-table">
+            <tr><th style="width:40%;">Incident ID</th><td>@Model.PestIncidentId</td></tr>
+            <tr><th>Pest / Disease</th><td style="font-weight:600;">@Model.PestName</td></tr>
+            <tr><th>Disease Name</th><td>@(Model.DiseaseName ?? "—")</td></tr>
+            <tr><th>Affected Crop</th><td>@(Model.Crop?.CropName ?? "—")</td></tr>
+            <tr><th>Description</th><td>@Model.Description</td></tr>
+            <tr>
+                <th>Status</th>
+                <td>
+                    @switch (Model.Status)
+                    {
+                        case FarmManagement.Web.Models.Enums.IncidentStatus.Active:
+                            <span class="badge-pill badge-red"><i class="bi bi-exclamation-triangle"></i> Active</span>
+                            break;
+                        case FarmManagement.Web.Models.Enums.IncidentStatus.Monitoring:
+                            <span class="badge-pill badge-yellow"><i class="bi bi-eye"></i> Monitoring</span>
+                            break;
+                        case FarmManagement.Web.Models.Enums.IncidentStatus.Resolved:
+                            <span class="badge-pill badge-green"><i class="bi bi-check-circle"></i> Resolved</span>
+                            break;
+                    }
+                </td>
+            </tr>
+            <tr><th>Reported Date</th><td>@Model.ReportedDate.ToString("dd MMM yyyy, hh:mm tt")</td></tr>
+        </table>
+
+        <div class="mt-4 d-flex gap-2">
+            <a asp-action="Index" class="btn-fm btn-outline-fm">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Pesticide Resources Section -->
+<div class="fm-card mt-4">
+    <div class="fm-card-header">
+        <span class="ch-title">
+            <i class="bi bi-droplet" style="color:#ea580c;"></i> Pesticide Resources
+        </span>
+    </div>
+    <div class="fm-card-body">
+        @if (TempData["Success"] != null)
+        {
+            <div class="fm-alert fm-alert-success mb-3">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>@TempData["Success"]</span>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="fm-alert fm-alert-danger mb-3">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>@TempData["Error"]</span>
+            </div>
+        }
+        @if (!Model.Resources.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-droplet"></i>
+                <p>No pesticide resources linked to this incident yet.</p>
+            </div>
+        }
+        else
+        {
+            <div style="overflow-x:auto;">
+                <table class="fm-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Resource Name</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ var rsno = 1; }
+                        @foreach (var res in Model.Resources)
+                        {
+                            <tr>
+                                <td style="color:var(--fm-muted);font-size:.8rem;">@(rsno++)</td>
+                                <td style="font-weight:600;">@res.Name</td>
+                                <td><span class="badge-pill badge-gray">@res.Type</span></td>
+                                <td style="font-weight:700;">@res.Quantity</td>
+                                <td>@res.Unit</td>
+                                <td>@res.LastUpdated.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Farmer"))
+                                        {
+                                            <a asp-action="EditResource"
+                                               asp-route-id="@res.ResourceId"
+                                               asp-route-pestId="@Model.PestIncidentId"
+                                               class="btn-fm btn-warn-fm btn-sm-fm">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form asp-action="DeleteResource"
+                                                  asp-route-id="@res.ResourceId"
+                                                  asp-route-pestId="@Model.PestIncidentId"
+                                                  method="post" class="d-inline"
+                                                  onsubmit="return confirm('Delete resource @res.Name?')">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn-fm btn-danger-fm btn-sm-fm">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

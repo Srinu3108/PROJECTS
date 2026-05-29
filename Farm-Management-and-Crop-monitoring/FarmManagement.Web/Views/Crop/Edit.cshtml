@@ -1,0 +1,118 @@
+@model FarmManagement.Web.Models.ViewModels.CropViewModel
+@using FarmManagement.Web.Models.Enums
+
+@{
+    ViewData["Title"] = "Edit Crop";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fef9c3;color:#ca8a04;">
+                <i class="bi bi-pencil"></i>
+            </span>
+            Edit Crop
+        </h1>
+        <p>Update the details for this crop record.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="fm-card" style="max-width:720px;">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-flower1" style="color:#2563eb;"></i> Crop Details</span>
+    </div>
+    <div class="fm-card-body fm-form">
+        <form asp-action="Edit" asp-route-id="@Model.CropId" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="CropId" />
+            <div asp-validation-summary="ModelOnly" class="fm-alert fm-alert-danger mb-3"></div>
+
+            <div class="fm-section"><i class="bi bi-info-circle"></i> Basic Information</div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="CropName" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-flower1 fm-fi" style="color:#2563eb;"></i>
+                        <input asp-for="CropName" class="form-control" />
+                    </div>
+                    <span asp-validation-for="CropName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CropType" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-tag fm-fi"></i>
+                        <input asp-for="CropType" class="form-control" />
+                    </div>
+                    <span asp-validation-for="CropType" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Season" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-sun fm-fi" style="color:#d97706;"></i>
+                        <select asp-for="Season" class="form-select"
+                                asp-items="Html.GetEnumSelectList<SeasonType>()">
+                        </select>
+                    </div>
+                    <span asp-validation-for="Season" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FieldId" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-map fm-fi" style="color:#0d9488;"></i>
+                        <select asp-for="FieldId" class="form-select" asp-items="Model.Fields">
+                            <option value="">-- Select Field --</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="FieldId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Status" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-activity fm-fi" style="color:#16a34a;"></i>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Growing">Growing</option>
+                            <option value="Harvested">Harvested</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fm-section mt-3"><i class="bi bi-calendar3"></i> Schedule</div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="PlantingDate" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-calendar3 fm-fi" style="color:#2563eb;"></i>
+                        <input asp-for="PlantingDate" class="form-control" type="date" />
+                    </div>
+                    <span asp-validation-for="PlantingDate" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="ExpectedHarvestDate" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-calendar-check fm-fi" style="color:#16a34a;"></i>
+                        <input asp-for="ExpectedHarvestDate" class="form-control" type="date" />
+                    </div>
+                    <span asp-validation-for="ExpectedHarvestDate" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="fm-actions">
+                <button type="submit" class="btn-fm btn-warn-fm">
+                    <i class="bi bi-pencil"></i> Update Crop
+                </button>
+                <a asp-action="Index" class="btn-fm btn-ghost-fm">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

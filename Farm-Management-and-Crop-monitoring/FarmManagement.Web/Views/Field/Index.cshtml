@@ -1,0 +1,114 @@
+@model IEnumerable<FarmManagement.Web.Models.Entities.Field>
+
+@{
+    ViewData["Title"] = "Fields";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#dcfce7;color:#16a34a;">
+                <i class="bi bi-grid-3x3-gap"></i>
+            </span>
+            Field Management
+        </h1>
+        <p>View and manage all farm fields and their details.</p>
+    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor"))
+    {
+        <a asp-action="Create" class="btn-fm btn-primary-fm">
+            <i class="bi bi-plus-circle"></i> Add Field
+        </a>
+    }
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="fm-alert fm-alert-success mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>@TempData["Success"]</span>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="fm-alert fm-alert-danger mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
+<div class="fm-card">
+    <div class="fm-card-header">
+        <span class="ch-title">
+            <i class="bi bi-table" style="color:var(--fm-green);"></i>
+            All Fields
+        </span>
+        <span style="font-size:.78rem;color:var(--fm-muted);">@Model.Count() records</span>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <p>No fields found. Add your first field to get started.</p>
+        </div>
+    }
+    else
+    {
+        <div style="overflow-x:auto;">
+            <table class="fm-table">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Field Name</th>
+                        <th>Area (ha)</th>
+                        <th>Soil Type</th>
+                        <th>Location</th>
+                        <th>Crops</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ var sno = 1; }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="color:var(--fm-muted);font-size:.8rem;">@(sno++)</td>
+                            <td style="font-weight:600;">@item.FieldName</td>
+                            <td>@item.AreaHectares ha</td>
+                            <td>@item.SoilType</td>
+                            <td>@item.Location</td>
+                            <td>
+                                <span class="badge-pill badge-blue">@(item.Crops?.Count() ?? 0) crops</span>
+                            </td>
+                            <td>@item.CreatedAt.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                                    <a asp-action="Details" asp-route-id="@item.FieldId"
+                                       class="btn-fm btn-info-fm btn-sm-fm">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.FieldId"
+                                           class="btn-fm btn-warn-fm btn-sm-fm">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@item.FieldId"
+                                              method="post" class="d-inline"
+                                              onsubmit="return confirm('Delete @item.FieldName?')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-fm btn-danger-fm btn-sm-fm">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

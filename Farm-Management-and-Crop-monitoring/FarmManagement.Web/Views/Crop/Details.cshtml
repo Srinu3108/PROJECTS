@@ -1,0 +1,155 @@
+@model FarmManagement.Web.Models.Entities.Crop
+
+@{
+    ViewData["Title"] = "Crop Details";
+    var cropBadge = Model.Status switch {
+        "Growing"   => "badge-green",
+        "Harvested" => "badge-gray",
+        _           => "badge-yellow"
+    };
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#dbeafe;color:#2563eb;">
+                <i class="bi bi-flower1"></i>
+            </span>
+            @Model.CropName
+        </h1>
+        <p>Crop details, pest incidents and planting schedules.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="fm-card h-100">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-flower1" style="color:#2563eb;"></i>
+                    Crop Information
+                </span>
+                <span class="badge-pill @cropBadge">@Model.Status</span>
+            </div>
+            <div class="fm-card-body">
+                <table style="width:100%;font-size:.875rem;">
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;width:45%;">Crop Type</td>
+                        <td>@Model.CropType</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;">Season</td>
+                        <td>@Model.Season</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;">Field</td>
+                        <td>@(Model.Field?.FieldName ?? "—")</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;">Planting Date</td>
+                        <td>@Model.PlantingDate.ToString("dd MMM yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;">Expected Harvest</td>
+                        <td style="font-weight:600;">@Model.ExpectedHarvestDate.ToString("dd MMM yyyy")</td>
+                    </tr>
+                </table>
+
+                @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor"))
+                {
+                    <div class="mt-3 d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.CropId" class="btn-fm btn-warn-fm btn-sm-fm">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@Model.CropId" method="post" class="d-inline"
+                              onsubmit="return confirm('Delete @Model.CropName?')">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-fm btn-danger-fm btn-sm-fm">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="fm-card mb-4">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-bug" style="color:#dc2626;"></i>
+                    Pest Incidents
+                </span>
+            </div>
+            @if (Model.PestIncidents == null || !Model.PestIncidents.Any())
+            {
+                <div class="empty-state" style="padding:2rem;">
+                    <i class="bi bi-shield-check" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem;"></i>
+                    <p>No pest incidents recorded.</p>
+                </div>
+            }
+            else
+            {
+                <table class="fm-table">
+                    <thead>
+                        <tr><th>Pest Name</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pest in Model.PestIncidents)
+                        {
+                            <tr>
+                                <td style="font-weight:600;">@pest.PestName</td>
+                                <td><span class="badge-pill badge-red">@pest.Status</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        <div class="fm-card">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-calendar3" style="color:#2563eb;"></i>
+                    Planting Schedules
+                </span>
+            </div>
+            @if (Model.PlantingSchedules == null || !Model.PlantingSchedules.Any())
+            {
+                <div class="empty-state" style="padding:2rem;">
+                    <i class="bi bi-calendar-x" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem;"></i>
+                    <p>No schedules found for this crop.</p>
+                </div>
+            }
+            else
+            {
+                <table class="fm-table">
+                    <thead>
+                        <tr>
+                            <th>Scheduled Date</th>
+                            <th>Expected (kg)</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.PlantingSchedules)
+                        {
+                            var sBadge = s.Status switch { "Scheduled" => "badge-blue", "Completed" => "badge-green", _ => "badge-gray" };
+                            <tr>
+                                <td>@s.ScheduledDate.ToString("dd MMM yyyy")</td>
+                                <td>@s.ExpectedYieldKg kg</td>
+                                <td><span class="badge-pill @sBadge">@s.Status</span></td>
+                                <td>@(s.Notes ?? "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

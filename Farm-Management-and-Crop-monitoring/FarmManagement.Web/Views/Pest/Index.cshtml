@@ -1,0 +1,159 @@
+@model IEnumerable<FarmManagement.Web.Models.Entities.PestIncident>
+
+@{
+    ViewData["Title"] = "Pest Incidents";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fee2e2;color:#dc2626;">
+                <i class="bi bi-bug"></i>
+            </span>
+            Pest Incidents
+        </h1>
+        <p>Track and manage pest and disease incidents across crops.</p>
+    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor"))
+    {
+        <a asp-action="Create" class="btn-fm btn-danger-fm">
+            <i class="bi bi-plus-circle"></i> Report Incident
+        </a>
+    }
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="fm-alert fm-alert-success mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>@TempData["Success"]</span>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="fm-alert fm-alert-danger mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
+<form method="get" class="mb-3 d-flex gap-2" style="max-width:400px;">
+    <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search pests or crops..." />
+    <button type="submit" class="btn-fm btn-danger-fm"><i class="bi bi-search"></i></button>
+    @if (!string.IsNullOrEmpty((string?)ViewBag.Search))
+    {
+        <a asp-action="Index" class="btn-fm btn-outline-fm"><i class="bi bi-x-lg"></i></a>
+    }
+</form>
+
+<div class="fm-card">
+    <div class="fm-card-header">
+        <span class="ch-title">
+            <i class="bi bi-table" style="color:#dc2626;"></i>
+            All Incidents
+        </span>
+        <span style="font-size:.78rem;color:var(--fm-muted);">@Model.Count() records</span>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-shield-check"></i>
+            <p>No pest incidents recorded. Your crops are healthy!</p>
+        </div>
+    }
+    else
+    {
+        <div style="overflow-x:auto;">
+            <table class="fm-table">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Pest Name</th>
+                        <th>Disease Name</th>
+                        <th>Crop</th>
+                        <th>Description</th>
+                        <th>Reported</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ var sno = 1; }
+                    @foreach (var item in Model)
+                    {
+                        var pestBadge = item.Status switch {
+                            FarmManagement.Web.Models.Enums.IncidentStatus.Active     => "badge-red",
+                            FarmManagement.Web.Models.Enums.IncidentStatus.Monitoring => "badge-yellow",
+                            _                                                          => "badge-green"
+                        };
+                        <tr>
+                            <td style="color:var(--fm-muted);font-size:.8rem;">@(sno++)</td>
+                            <td style="font-weight:600;">@item.PestName</td>
+                            <td>@(item.DiseaseName ?? "—")</td>
+                            <td>@(item.Crop?.CropName ?? "—")</td>
+                            <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                @(item.Description ?? "—")
+                            </td>
+                            <td>@item.ReportedDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor") || User.IsInRole("Agronomist"))
+                                {
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.PestIncidentId" />
+                                        <select name="status" class="form-select form-select-sm"
+                                                style="width:auto;display:inline-block;min-width:130px;font-size:.8rem;"
+                                                onchange="this.form.submit()">
+                                            <option value="Active" selected="@(item.Status == FarmManagement.Web.Models.Enums.IncidentStatus.Active ? "selected" : null)">
+                                                🔴 Active
+                                            </option>
+                                            <option value="Monitoring" selected="@(item.Status == FarmManagement.Web.Models.Enums.IncidentStatus.Monitoring ? "selected" : null)">
+                                                🟡 Monitoring
+                                            </option>
+                                            <option value="Resolved" selected="@(item.Status == FarmManagement.Web.Models.Enums.IncidentStatus.Resolved ? "selected" : null)">
+                                                🟢 Resolved
+                                            </option>
+                                        </select>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="badge-pill @pestBadge">@item.Status</span>
+                                }
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                                    <a asp-action="Details" asp-route-id="@item.PestIncidentId"
+                                       class="btn-fm btn-info-fm btn-sm-fm">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.PestIncidentId"
+                                           class="btn-fm btn-warn-fm btn-sm-fm">
+                                            <i class="bi bi-pencil"></i> Update
+                                        </a>
+                                    }
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor"))
+                                    {
+                                        <form asp-action="Delete"
+                                              asp-route-id="@item.PestIncidentId"
+                                              method="post" class="d-inline"
+                                              onsubmit="return confirm('Delete @item.PestName incident?')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-fm btn-danger-fm btn-sm-fm">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+

@@ -1,0 +1,80 @@
+@model FarmManagement.Web.Models.ViewModels.InventoryViewModel
+@{
+    ViewData["Title"] = "Edit Resource";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#ffedd5;color:#ea580c;">
+                <i class="bi bi-pencil-square"></i>
+            </span>
+            Edit Resource
+        </h1>
+        <p>Update the resource details below.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="fm-card" style="max-width:720px;">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-pencil" style="color:#ea580c;"></i> Resource Details</span>
+    </div>
+    <div class="fm-card-body fm-form">
+        <form asp-action="Edit" asp-route-id="@Model.ResourceId" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ResourceId" />
+            <div asp-validation-summary="ModelOnly" class="fm-alert fm-alert-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-tag fm-fi"></i>
+                        <input asp-for="Name" class="form-control" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Type" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-box fm-fi" style="color:#ea580c;"></i>
+                        <select asp-for="Type" class="form-select"
+                                asp-items="Html.GetEnumSelectList<FarmManagement.Web.Models.Enums.ResourceType>()">
+                        </select>
+                    </div>
+                    <span asp-validation-for="Type" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Quantity" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-hash fm-fi"></i>
+                        <input asp-for="Quantity" class="form-control" />
+                    </div>
+                    <span asp-validation-for="Quantity" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Unit" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-123 fm-fi"></i>
+                        <input asp-for="Unit" class="form-control" />
+                    </div>
+                    <span asp-validation-for="Unit" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="fm-actions">
+                <button type="submit" class="btn-fm btn-primary-fm">
+                    <i class="bi bi-check-circle"></i> Save Changes
+                </button>
+                <a asp-action="Index" class="btn-fm btn-ghost-fm">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

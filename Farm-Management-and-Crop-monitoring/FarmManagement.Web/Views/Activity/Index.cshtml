@@ -1,0 +1,221 @@
+@model IEnumerable<FarmManagement.Web.Models.Entities.ActivityLog>
+
+@{
+    ViewData["Title"] = "Activity Log";
+    var total     = Model.Count();
+    var today     = Model.Count(a => a.Timestamp.Date == DateTime.Today);
+    var thisWeek  = Model.Count(a => a.Timestamp >= DateTime.Today.AddDays(-7));
+    var userCount = Model.Select(a => a.UserId).Distinct().Count();
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#dcfce7;color:#16a34a;">
+                <i class="bi bi-activity"></i>
+            </span>
+            Activity Log
+        </h1>
+        <p>Full audit trail of every action performed across the system.</p>
+    </div>
+</div>
+
+<!-- Summary stats -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#dcfce7;color:#16a34a;">
+                <i class="bi bi-list-check"></i>
+            </div>
+            <div>
+                <div class="stat-value" style="color:#16a34a;">@total</div>
+                <div class="stat-label">Total Actions</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#dbeafe;color:#2563eb;">
+                <i class="bi bi-calendar-day"></i>
+            </div>
+            <div>
+                <div class="stat-value" style="color:#2563eb;">@today</div>
+                <div class="stat-label">Today</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef9c3;color:#ca8a04;">
+                <i class="bi bi-calendar-week"></i>
+            </div>
+            <div>
+                <div class="stat-value" style="color:#ca8a04;">@thisWeek</div>
+                <div class="stat-label">This Week</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#ede9fe;color:#7c3aed;">
+                <i class="bi bi-people"></i>
+            </div>
+            <div>
+                <div class="stat-value" style="color:#7c3aed;">@userCount</div>
+                <div class="stat-label">Active Members</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fm-card">
+    <div class="fm-card-header">
+        <span class="ch-title">
+            <i class="bi bi-clock-history" style="color:#16a34a;"></i>
+            Recent Actions
+        </span>
+        <span style="font-size:.78rem;color:var(--fm-muted);">@total entries · last 100</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-clock-history"></i>
+            <p>No activity recorded yet. Actions by all users will appear here.</p>
+        </div>
+    }
+    else
+    {
+        <!-- Filter bar -->
+        <div style="padding:.7rem 1.1rem;border-bottom:1px solid var(--fm-border);
+                    display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;background:#fafafa;">
+            <input id="searchInput" type="text" placeholder="Search user, description…"
+                   oninput="filterRows()"
+                   style="border:1.5px solid #d1d5db;border-radius:7px;padding:.38rem .8rem;
+                          font-size:.82rem;outline:none;width:240px;transition:border-color .15s;"
+                   onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#d1d5db'" />
+
+            <select id="filterType" onchange="filterRows()"
+                    style="border:1.5px solid #d1d5db;border-radius:7px;padding:.38rem .7rem;
+                           font-size:.82rem;outline:none;background:#fff;cursor:pointer;transition:border-color .15s;"
+                    onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#d1d5db'">
+                <option value="">All Types</option>
+                <option>Crop</option>
+                <option>Field</option>
+                <option>Schedule</option>
+                <option>Harvest</option>
+                <option>Pest</option>
+                <option>Resource</option>
+                <option>User</option>
+            </select>
+
+            <select id="filterRole" onchange="filterRows()"
+                    style="border:1.5px solid #d1d5db;border-radius:7px;padding:.38rem .7rem;
+                           font-size:.82rem;outline:none;background:#fff;cursor:pointer;transition:border-color .15s;"
+                    onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#d1d5db'">
+                <option value="">All Roles</option>
+                <option>Admin</option>
+                <option>Farmer</option>
+                <option>FieldSupervisor</option>
+                <option>Storekeeper</option>
+                <option>Agronomist</option>
+            </select>
+
+            <span id="rowCount" style="font-size:.77rem;color:var(--fm-muted);margin-left:.2rem;"></span>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="fm-table" id="actTable">
+                <thead>
+                    <tr>
+                        <th style="width:155px;">Timestamp</th>
+                        <th>Member</th>
+                        <th style="width:105px;">Role</th>
+                        <th style="width:100px;">Type</th>
+                        <th style="width:95px;">Action</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        var (icon, iconColor, iconBg) = log.EntityType switch {
+                            "Crop"     => ("bi-flower1",       "#2563eb", "#dbeafe"),
+                            "Field"    => ("bi-grid-3x3-gap",  "#16a34a", "#dcfce7"),
+                            "Schedule" => ("bi-calendar3",     "#ca8a04", "#fef9c3"),
+                            "Harvest"  => ("bi-basket",        "#16a34a", "#dcfce7"),
+                            "Pest"     => ("bi-bug",           "#dc2626", "#fee2e2"),
+                            "Resource" => ("bi-box-seam",      "#ea580c", "#ffedd5"),
+                            "User"     => ("bi-person-fill",   "#7c3aed", "#ede9fe"),
+                            _          => ("bi-circle-fill",   "#94a3b8", "#f1f5f9")
+                        };
+                        var actionBadge = log.Action switch {
+                            "Created" or "Registered"         => "badge-green",
+                            "Deleted"                         => "badge-red",
+                            "Updated" or "RoleChanged"        => "badge-blue",
+                            "Harvested" or "Allocated"        => "badge-yellow",
+                            "Reported"                        => "badge-orange",
+                            _                                 => "badge-gray"
+                        };
+                        var roleCss = log.UserRole.ToLower() switch {
+                            "admin"           => "role-admin",
+                            "farmer"          => "role-manager",
+                            "fieldsupervisor" => "role-supervisor",
+                            "storekeeper"     => "role-worker",
+                            _                 => "role-viewer"
+                        };
+                        <tr data-entity="@log.EntityType"
+                            data-role="@log.UserRole"
+                            data-search="@(log.UserName + " " + log.Action + " " + log.Description + " " + log.EntityType)">
+                            <td style="white-space:nowrap;">
+                                <div style="font-size:.8rem;color:var(--fm-text);">@log.Timestamp.ToString("dd MMM yyyy")</div>
+                                <div style="font-size:.72rem;color:var(--fm-muted);">@log.Timestamp.ToString("hh:mm tt")</div>
+                            </td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:.5rem;">
+                                    <div style="width:28px;height:28px;border-radius:50%;background:#f1f5f9;
+                                                display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                        <i class="bi bi-person-fill" style="color:#94a3b8;font-size:.78rem;"></i>
+                                    </div>
+                                    <span style="font-weight:600;font-size:.85rem;">@log.UserName</span>
+                                </div>
+                            </td>
+                            <td><span class="urole @roleCss" style="font-size:.66rem;">@log.UserRole</span></td>
+                            <td>
+                                <span style="display:inline-flex;align-items:center;gap:.28rem;
+                                             padding:.22rem .55rem;border-radius:6px;
+                                             font-size:.74rem;font-weight:600;
+                                             background:@iconBg;color:@iconColor;">
+                                    <i class="bi @icon"></i> @log.EntityType
+                                </span>
+                            </td>
+                            <td><span class="badge-pill @actionBadge">@log.Action</span></td>
+                            <td style="font-size:.83rem;">@log.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+<script>
+    function filterRows() {
+        var text   = document.getElementById('searchInput').value.toLowerCase();
+        var type   = document.getElementById('filterType').value.toLowerCase();
+        var role   = document.getElementById('filterRole').value.toLowerCase();
+        var rows   = document.querySelectorAll('#actTable tbody tr');
+        var vis    = 0;
+        rows.forEach(function(r) {
+            var ok = (!text || r.dataset.search.toLowerCase().includes(text))
+                  && (!type || r.dataset.entity.toLowerCase() === type)
+                  && (!role || r.dataset.role.toLowerCase() === role);
+            r.style.display = ok ? '' : 'none';
+            if(ok) vis++;
+        });
+        document.getElementById('rowCount').textContent = vis + ' result' + (vis !== 1 ? 's' : '');
+    }
+    filterRows();
+</script>
+}

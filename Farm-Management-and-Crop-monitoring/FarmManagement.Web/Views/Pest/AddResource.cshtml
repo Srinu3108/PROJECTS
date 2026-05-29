@@ -1,0 +1,66 @@
+@model FarmManagement.Web.Models.ViewModels.InventoryViewModel
+@{
+    ViewData["Title"] = "Add Pesticide Resource";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fee2e2;color:#dc2626;">
+                <i class="bi bi-droplet"></i>
+            </span>
+            Add Pesticide Resource
+        </h1>
+        <p>Add a pesticide resource for incident <strong>@ViewBag.PestName</strong>.</p>
+    </div>
+    <a asp-action="Details" asp-route-id="@ViewBag.PestIncidentId" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to Incident
+    </a>
+</div>
+
+<div class="fm-card" style="max-width:720px;">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-droplet" style="color:#ea580c;"></i> Resource Details</span>
+    </div>
+    <div class="fm-card-body fm-form">
+        <form asp-action="AddResource" asp-route-id="@ViewBag.PestIncidentId" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="fm-alert fm-alert-danger mb-3"></div>
+
+            <input type="hidden" asp-for="Type" value="@((int)FarmManagement.Web.Models.Enums.ResourceType.Pesticide)" />
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter pesticide name" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Type</label>
+                    <input type="text" class="form-control" value="Pesticide" disabled />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Quantity" class="form-label"></label>
+                    <input asp-for="Quantity" class="form-control" placeholder="e.g. 100" />
+                    <span asp-validation-for="Quantity" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Unit" class="form-label"></label>
+                    <input asp-for="Unit" class="form-control" placeholder="e.g. kg, L, units" />
+                    <span asp-validation-for="Unit" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn-fm btn-primary-fm">
+                    <i class="bi bi-plus-circle"></i> Add Resource
+                </button>
+                <a asp-action="Details" asp-route-id="@ViewBag.PestIncidentId" class="btn-fm btn-ghost-fm">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

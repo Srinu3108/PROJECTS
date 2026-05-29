@@ -1,0 +1,16 @@
+<Solution>
+  <Project Path="FarmManagement.AnalyticsService/FarmManagement.AnalyticsService.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="FarmManagement.Core/FarmManagement.Core.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="FarmManagement.CropFieldService/FarmManagement.CropFieldService.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="FarmManagement.PestResourceService/FarmManagement.PestResourceService.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="FarmManagement.Web/FarmManagement.Web.csproj" />
+  <Project Path="FramManagementSystem NUNIT/FarmManagementSystem NUNIT.csproj" Id="71870d37-87dc-45e9-bc97-36bbe6314940" />
+</Solution>

@@ -1,0 +1,431 @@
+﻿/* ============================================================
+   Farm Management System — Custom Theme
+   ============================================================ */
+
+/* ── Root Variables ─────────────────────────────────────── */
+:root {
+    --farm-green: #198754;
+    --farm-green-dark: #146c43;
+    --farm-green-light: #d1e7dd;
+    --farm-brown: #6d4c2a;
+    --farm-brown-light: #f3ede5;
+    --farm-yellow: #ffc107;
+    --farm-orange: #fd7e14;
+    --farm-red: #dc3545;
+    --farm-sky: #0dcaf0;
+    --farm-gray: #6c757d;
+    --farm-bg: #f5f7f2;
+    --sidebar-width: 220px;
+    --navbar-height: 56px;
+    --border-radius: 10px;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --transition: all 0.2s ease;
+}
+
+/* ── Base ───────────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--farm-bg);
+    color: #212529;
+    font-size: 0.95rem;
+}
+
+a {
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: none;
+    }
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+/* ── Navbar ─────────────────────────────────────────────── */
+.farm-navbar {
+    background: linear-gradient(135deg, var(--farm-green-dark) 0%, var(--farm-green) 100%);
+    height: var(--navbar-height);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+    .farm-navbar .navbar-brand {
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #fff !important;
+    }
+
+    .farm-navbar .nav-link {
+        color: rgba(255,255,255,0.85) !important;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+        .farm-navbar .nav-link:hover {
+            color: #fff !important;
+        }
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.farm-sidebar {
+    width: var(--sidebar-width);
+    min-height: calc(100vh - var(--navbar-height));
+    background: #ffffff;
+    border-right: 1px solid #e9ecef;
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    overflow-y: auto;
+    padding: 1rem 0.75rem;
+    box-shadow: var(--shadow-sm);
+    z-index: 1020;
+}
+
+    .farm-sidebar .sidebar-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--farm-gray);
+        text-transform: uppercase;
+        padding: 0.5rem 0.5rem 0.25rem;
+    }
+
+    .farm-sidebar .nav-link {
+        color: #495057;
+        border-radius: var(--border-radius);
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 2px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition);
+    }
+
+        .farm-sidebar .nav-link:hover {
+            background: var(--farm-green-light);
+            color: var(--farm-green-dark);
+        }
+
+        .farm-sidebar .nav-link.active {
+            background: var(--farm-green);
+            color: #fff !important;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .farm-sidebar .nav-link .icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+/* ── Main Content Area ───────────────────────────────────── */
+.farm-content {
+    margin-left: var(--sidebar-width);
+    padding: 1.75rem 2rem;
+    min-height: calc(100vh - var(--navbar-height));
+}
+
+/* ── Page Header ─────────────────────────────────────────── */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--farm-green-light);
+}
+
+    .page-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--farm-green-dark);
+        margin: 0;
+    }
+
+/* ── Cards ───────────────────────────────────────────────── */
+.farm-card {
+    background: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+    .farm-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+    }
+
+    .farm-card .card-header {
+        background: transparent;
+        border-bottom: 1px solid #e9ecef;
+        font-weight: 600;
+        padding: 1rem 1.25rem;
+        border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+    }
+
+/* ── Stat Cards (Dashboard) ──────────────────────────────── */
+.stat-card {
+    border-radius: var(--border-radius);
+    padding: 1.25rem 1.5rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+    .stat-card .stat-icon {
+        font-size: 2.5rem;
+        opacity: 0.25;
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .stat-card .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        margin-top: 4px;
+    }
+
+    .stat-card.green {
+        background: linear-gradient(135deg, #198754, #20c997);
+    }
+
+    .stat-card.blue {
+        background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+    }
+
+    .stat-card.orange {
+        background: linear-gradient(135deg, #fd7e14, #ffc107);
+    }
+
+    .stat-card.red {
+        background: linear-gradient(135deg, #dc3545, #fd7e14);
+    }
+
+    .stat-card.teal {
+        background: linear-gradient(135deg, #20c997, #0dcaf0);
+    }
+
+    .stat-card.brown {
+        background: linear-gradient(135deg, #6d4c2a, #a0785a);
+    }
+
+/* ── Tables ──────────────────────────────────────────────── */
+.farm-table {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+    .farm-table table {
+        margin-bottom: 0;
+    }
+
+    .farm-table thead th {
+        background: var(--farm-green);
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.03em;
+        padding: 0.85rem 1rem;
+        border: none;
+        white-space: nowrap;
+    }
+
+    .farm-table tbody tr {
+        transition: var(--transition);
+    }
+
+        .farm-table tbody tr:hover {
+            background-color: var(--farm-green-light) !important;
+        }
+
+    .farm-table tbody td {
+        padding: 0.8rem 1rem;
+        vertical-align: middle;
+        border-color: #f0f0f0;
+    }
+
+/* ── Badges ──────────────────────────────────────────────── */
+.badge-status {
+    padding: 0.4em 0.8em;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.badge-growing {
+    background: #d1e7dd;
+    color: #0a3622;
+}
+
+.badge-scheduled {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.badge-completed {
+    background: #d1e7dd;
+    color: #0a3622;
+}
+
+.badge-active {
+    background: #f8d7da;
+    color: #58151c;
+}
+
+.badge-treatment {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.badge-resolved {
+    background: #d1e7dd;
+    color: #0a3622;
+}
+
+.badge-low-stock {
+    background: #f8d7da;
+    color: #58151c;
+}
+
+.badge-in-stock {
+    background: #d1e7dd;
+    color: #0a3622;
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn-farm {
+    background: var(--farm-green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.45rem 1.1rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+    .btn-farm:hover {
+        background: var(--farm-green-dark);
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+    }
+
+.btn-farm-outline {
+    border: 1.5px solid var(--farm-green);
+    color: var(--farm-green);
+    background: transparent;
+    border-radius: 8px;
+    padding: 0.45rem 1.1rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+    .btn-farm-outline:hover {
+        background: var(--farm-green);
+        color: #fff;
+    }
+
+/* ── Forms ───────────────────────────────────────────────── */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1.5px solid #dee2e6;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.92rem;
+    transition: var(--transition);
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--farm-green);
+        box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15);
+    }
+
+/* ── Alerts ──────────────────────────────────────────────── */
+.alert {
+    border-radius: var(--border-radius);
+    border: none;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: var(--farm-green-light);
+    color: #0a3622;
+}
+
+/* ── Pagination ──────────────────────────────────────────── */
+.page-link {
+    color: var(--farm-green);
+    border-radius: 6px !important;
+    margin: 0 2px;
+}
+
+    .page-link:hover, .page-item.active .page-link {
+        background-color: var(--farm-green);
+        border-color: var(--farm-green);
+        color: #fff;
+    }
+
+/* ── Empty State ─────────────────────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--farm-gray);
+}
+
+    .empty-state .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.4;
+    }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .farm-sidebar {
+        display: none;
+    }
+
+    .farm-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .stat-card .stat-value {
+        font-size: 1.5rem;
+    }
+}
