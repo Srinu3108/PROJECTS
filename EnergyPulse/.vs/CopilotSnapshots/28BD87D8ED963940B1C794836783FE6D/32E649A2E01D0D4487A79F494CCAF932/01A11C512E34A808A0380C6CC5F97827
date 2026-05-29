@@ -1,0 +1,76 @@
+﻿@page "/report"
+@inject HttpClient Http
+
+<h1 style="color:lightgreen;">📄 Maintenance Report</h1>
+
+@if (report == null)
+{
+    <p style="color:white;">Loading report...</p>
+}
+else
+{
+    <div style="background:#161b22;padding:20px;border-radius:12px;color:white;">
+
+        <h3>🏭 Site: @report.Site</h3>
+        <p><strong>Total Devices:</strong> @report.TotalDevices</p>
+        <p><strong>Active Devices:</strong> @report.ActiveDevices</p>
+        <p><strong>Performance:</strong> @report.AverageEfficiency %</p>
+        <p><strong>Total Alerts:</strong> @report.TotalAlerts</p>
+        <p><strong>High Alerts:</strong> @report.HighAlerts</p>
+        <p><strong>Generated At:</strong> @report.GeneratedAt</p>
+
+    </div>
+
+    <br />
+
+    <!-- 🔥 DOWNLOAD BUTTON -->
+    <button style="
+            background:#238636;
+            color:white;
+            padding:10px 20px;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;"
+            @onclick="DownloadReport">
+        ⬇ Download Report
+    </button>
+}
+
+@code {
+    private ReportDto? report;
+
+    protected override async Task OnInitializedAsync()
+    {
+        report = await Http.GetFromJsonAsync<ReportDto>("api/report");
+    }
+
+    private async Task DownloadReport()
+    {
+        var content = $@"
+        EnergyPulse Report
+
+        Site: {report?.Site}
+        Total Devices: {report?.TotalDevices}
+        Active Devices: {report?.ActiveDevices}
+        Performance: {report?.AverageEfficiency}%
+        Total Alerts: {report?.TotalAlerts}
+        High Alerts: {report?.HighAlerts}
+        Generated At: {report?.GeneratedAt}
+        ";
+
+        await JS.InvokeVoidAsync("downloadFile", "EnergyReport.txt", content);
+    }
+
+    public class ReportDto
+    {
+        public string Site { get; set; }
+        public int TotalDevices { get; set; }
+        public int ActiveDevices { get; set; }
+        public double AverageEfficiency { get; set; }
+        public int TotalAlerts { get; set; }
+        public int HighAlerts { get; set; }
+        public DateTime GeneratedAt { get; set; }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}

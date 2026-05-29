@@ -1,0 +1,36 @@
+﻿@inherits LayoutComponentBase
+
+<div style="display:flex;height:100vh;">
+
+    <!-- Sidebar -->
+    <div style="width:250px;background:#111;color:white;">
+        <NavMenu />
+    </div>
+
+    <!-- Main Content -->
+    <div style="
+        flex:1;
+        background:#1e1e1e;
+        color:white;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        overflow-y:auto;
+    ">
+
+        <div style="
+            background:#161b22;
+            padding:15px 25px;
+            color:white;
+            font-size:20px;
+            border-bottom:1px solid #30363d;
+        ">
+
+            ⚡ EnergyPulse Dashboard
+
+        </div>
+
+        @Body
+    </div>
+
+</div>

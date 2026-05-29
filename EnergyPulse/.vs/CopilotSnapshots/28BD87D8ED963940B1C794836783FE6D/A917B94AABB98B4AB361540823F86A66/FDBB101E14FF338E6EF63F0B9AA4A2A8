@@ -1,0 +1,581 @@
+﻿@inject IJSRuntime JS
+@page "/"
+@page "/dashboard"
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<div style="
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    min-height: 100vh;
+">
+    <div style="width: 100%; max-width: 1400px;">
+
+        <!-- 🔹 HEADER -->
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="color: #58a6ff; margin: 0; font-size: 28px;">
+                EnergyPulse – Smart Energy Monitoring System
+            </h2>
+
+            <p style="color: #8b949e; margin: 8px 0; font-size: 14px;">
+                Real-time monitoring, alert detection, and performance analytics.
+            </p>
+
+            <h1 style="color: #2ecc71; margin: 15px 0 5px 0; font-size: 32px;">
+                ⚡ Energy Dashboard
+            </h1>
+
+            <p style="color: #8b949e; font-size: 13px; margin: 0;">
+                Last updated: @currentTime
+            </p>
+        </div>
+
+        <!-- 🔹 SYSTEM STATUS BANNER -->
+        <div style="
+            background: linear-gradient(90deg, rgba(46, 204, 113, 0.1) 0%, rgba(88, 166, 255, 0.1) 100%);
+            border: 2px solid #238636;
+            padding: 18px 24px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        ">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="
+                    width: 12px;
+                    height: 12px;
+                    background: #2ecc71;
+                    border-radius: 50%;
+                    animation: pulse 2s infinite;
+                "></div>
+                <div>
+                    <p style="color: #2ecc71; margin: 0; font-size: 14px; font-weight: 600;">
+                        ✅ System Status: OPERATIONAL
+                    </p>
+                    <p style="color: #8b949e; margin: 4px 0 0 0; font-size: 12px;">
+                        All systems running smoothly
+                    </p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 20px; font-size: 12px; color: #8b949e;">
+                <div>
+                    <p style="margin: 0; font-weight: 600; color: #58a6ff;">Uptime</p>
+                    <p style="margin: 4px 0 0 0;">99.9%</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-weight: 600; color: #2ecc71;">Response Time</p>
+                    <p style="margin: 4px 0 0 0;">245ms</p>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @@keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+        </style>
+
+        @if (dashboard == null)
+        {
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 60px 20px;
+                background: #161b22;
+                border-radius: 12px;
+                border: 1px solid #30363d;
+            ">
+                <p style="color: #8b949e; font-size: 18px; margin: 0;">
+                    ⏳ Loading dashboard data...
+                </p>
+            </div>
+        }
+        else
+        {
+            <!-- 🔹 KEY METRICS BAR -->
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 30px;
+            ">
+                <div style="
+                    background: #161b22;
+                    padding: 18px 22px;
+                    border-radius: 10px;
+                    border: 1px solid #30363d;
+                    color: white;
+                    text-align: center;
+                ">
+                    <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Efficiency</p>
+                    <p style="color: @(dashboard.AverageEfficiency >= 80 ? "#2ecc71" : dashboard.AverageEfficiency >= 60 ? "#f1c40f" : "#e74c3c"); margin: 0; font-size: 24px; font-weight: bold;">@dashboard.AverageEfficiency%</p>
+                </div>
+
+                <div style="
+                    background: #161b22;
+                    padding: 18px 22px;
+                    border-radius: 10px;
+                    border: 1px solid #30363d;
+                    color: white;
+                    text-align: center;
+                ">
+                    <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Active Devices</p>
+                    <p style="color: #2ecc71; margin: 0; font-size: 24px; font-weight: bold;">@dashboard.ActiveDevices / @dashboard.TotalDevices</p>
+                </div>
+
+                <div style="
+                    background: #161b22;
+                    padding: 18px 22px;
+                    border-radius: 10px;
+                    border: 1px solid #30363d;
+                    color: white;
+                    text-align: center;
+                ">
+                    <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">High Alerts</p>
+                    <p style="color: @(dashboard.HighAlerts > 0 ? "#e74c3c" : "#2ecc71"); margin: 0; font-size: 24px; font-weight: bold;">@dashboard.HighAlerts</p>
+                </div>
+
+                <div style="
+                    background: #161b22;
+                    padding: 18px 22px;
+                    border-radius: 10px;
+                    border: 1px solid #30363d;
+                    color: white;
+                    text-align: center;
+                ">
+                    <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Medium Alerts</p>
+                    <p style="color: @(dashboard.MediumAlerts > 0 ? "#f1c40f" : "#2ecc71"); margin: 0; font-size: 24px; font-weight: bold;">@dashboard.MediumAlerts</p>
+                </div>
+            </div>
+
+            <!-- 🔹 MAIN CARDS SECTION -->
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 25px;
+                margin-bottom: 30px;
+            ">
+                <!-- Performance Index Card -->
+                <div style="
+                    background: #161b22;
+                    border: 1px solid #30363d;
+                    padding: 30px;
+                    border-radius: 14px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                    transition: all 0.3s ease;
+                ">
+                    <h3 style="color: #58a6ff; margin: 0 0 15px 0; font-size: 18px;">
+                        ⚡ System Performance Index
+                    </h3>
+
+                    <div style="text-align: center;">
+                        <h1 style="
+                            font-size: 56px;
+                            font-weight: bold;
+                            margin: 15px 0;
+                            color: @(dashboard.AverageEfficiency >= 80 ? "#2ecc71" :
+                                        dashboard.AverageEfficiency >= 60 ? "#f1c40f" : "#e74c3c");
+                        ">
+                            @dashboard.AverageEfficiency%
+                        </h1>
+
+                        <div style="
+                            background: @(dashboard.AverageEfficiency >= 80 ? "rgba(46, 204, 113, 0.1)" :
+                                        dashboard.AverageEfficiency >= 60 ? "rgba(241, 196, 15, 0.1)" : "rgba(231, 76, 60, 0.1)");
+                            padding: 12px;
+                            border-radius: 8px;
+                            margin: 15px 0;
+                            border-left: 4px solid @(dashboard.AverageEfficiency >= 80 ? "#2ecc71" :
+                                        dashboard.AverageEfficiency >= 60 ? "#f1c40f" : "#e74c3c");
+                        ">
+                            <p style="color: #e6edf3; margin: 0; font-size: 14px;">
+                                @(dashboard.AverageEfficiency >= 80 ? "✅ System Operating Optimally"
+                                    : dashboard.AverageEfficiency >= 60 ? "⚠️ Monitor Performance Closely"
+                                    : "❌ Immediate Maintenance Required")
+                            </p>
+                        </div>
+
+                        <p style="color: #8b949e; margin: 10px 0 0 0; font-size: 13px;">
+                            Status: <b style="color: @(dashboard.AverageEfficiency >= 80 ? "#2ecc71" :
+                                        dashboard.AverageEfficiency >= 60 ? "#f1c40f" : "#e74c3c");">
+                                @(dashboard.AverageEfficiency >= 80 ? "GOOD" :
+                                        dashboard.AverageEfficiency >= 60 ? "AVERAGE" : "CRITICAL")
+                            </b>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Devices Overview Card -->
+                <div style="
+                    background: #161b22;
+                    border: 1px solid #30363d;
+                    padding: 30px;
+                    border-radius: 14px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                ">
+                    <h3 style="color: #58a6ff; margin: 0 0 15px 0; font-size: 18px;">
+                        📊 Device Overview
+                    </h3>
+
+                    <div style="
+                        display: grid;
+                        gap: 18px;
+                    ">
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #58a6ff;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Total Devices</span>
+                            <span style="color: #58a6ff; font-size: 22px; font-weight: bold;">@dashboard.TotalDevices</span>
+                        </div>
+
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #2ecc71;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Active Devices</span>
+                            <span style="color: #2ecc71; font-size: 22px; font-weight: bold;">@dashboard.ActiveDevices</span>
+                        </div>
+
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #e74c3c;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Inactive Devices</span>
+                            <span style="color: #e74c3c; font-size: 22px; font-weight: bold;">@(dashboard.TotalDevices - dashboard.ActiveDevices)</span>
+                        </div>
+
+                        <div style="
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            text-align: center;
+                        ">
+                            <p style="color: #8b949e; font-size: 12px; margin: 0;">
+                                Uptime: <b style="color: #2ecc71;">@Math.Round((double)dashboard.ActiveDevices / dashboard.TotalDevices * 100, 1)%</b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts Status Card -->
+                <div style="
+                    background: #161b22;
+                    border: 1px solid #30363d;
+                    padding: 30px;
+                    border-radius: 14px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                ">
+                    <h3 style="color: #ff4d4d; margin: 0 0 15px 0; font-size: 18px;">
+                        🔴 Alert Status
+                    </h3>
+
+                    <div style="
+                        display: grid;
+                        gap: 18px;
+                    ">
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #e74c3c;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">High Priority</span>
+                            <span style="color: #e74c3c; font-size: 22px; font-weight: bold;">@dashboard.HighAlerts</span>
+                        </div>
+
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #f1c40f;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Medium Priority</span>
+                            <span style="color: #f1c40f; font-size: 22px; font-weight: bold;">@dashboard.MediumAlerts</span>
+                        </div>
+
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #2ecc71;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Total Alerts</span>
+                            <span style="color: #e6edf3; font-size: 22px; font-weight: bold;">@(dashboard.HighAlerts + dashboard.MediumAlerts)</span>
+                        </div>
+
+                        <div style="
+                            padding: 12px;
+                            background: @(dashboard.HighAlerts > 0 ? "rgba(231, 76, 60, 0.1)" : "rgba(46, 204, 113, 0.1)");
+                            border-radius: 8px;
+                            border-left: 4px solid @(dashboard.HighAlerts > 0 ? "#e74c3c" : "#2ecc71");
+                            text-align: center;
+                        ">
+                            <p style="color: #8b949e; font-size: 12px; margin: 0;">
+                                System: <b style="color: @(dashboard.HighAlerts > 0 ? "#e74c3c" : "#2ecc71");">@(dashboard.HighAlerts > 0 ? "⚠️ ATTENTION NEEDED" : "✅ HEALTHY")</b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔹 ACTION BUTTONS -->
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 30px;
+            ">
+                <button @onclick="GenerateReport"
+                        style="
+                            background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+                            color: white;
+                            padding: 14px 24px;
+                            border: none;
+                            border-radius: 10px;
+                            font-size: 15px;
+                            font-weight: 500;
+                            cursor: pointer;
+                            box-shadow: 0 4px 12px rgba(31, 111, 235, 0.3);
+                            transition: all 0.3s ease;
+                        "
+                        @onmouseover="@((MouseEventArgs e) => {})"
+                        @onmouseout="@((MouseEventArgs e) => {})">
+                    📄 Generate Maintenance Report
+                </button>
+
+                <button style="
+                    background: linear-gradient(135deg, #238636 0%, #1a6e2b 100%);
+                    color: white;
+                    padding: 14px 24px;
+                    border: none;
+                    border-radius: 10px;
+                    font-size: 15px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+                    transition: all 0.3s ease;
+                ">
+                    🔄 Refresh Data
+                </button>
+
+                <button style="
+                    background: linear-gradient(135deg, #6e40aa 0%, #533097 100%);
+                    color: white;
+                    padding: 14px 24px;
+                    border: none;
+                    border-radius: 10px;
+                    font-size: 15px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(110, 64, 170, 0.3);
+                    transition: all 0.3s ease;
+                ">
+                    📋 View Analytics
+                </button>
+            </div>
+
+            <!-- 🔹 INSIGHTS & RECOMMENDATIONS PANEL -->
+            <div style="margin-bottom: 30px;">
+                <div style="
+                    background: #161b22;
+                    padding: 30px;
+                    border-radius: 14px;
+                    color: white;
+                    border: 1px solid #30363d;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                ">
+                    <h3 style="
+                        color: #ff4d4d;
+                        margin: 0 0 20px 0;
+                        font-size: 18px;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    ">
+                        ⚠️ Top Underperforming Devices & Recommendations
+                    </h3>
+
+                    <div style="
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                        gap: 15px;
+                    ">
+                        <div style="
+                            background: #0d1117;
+                            padding: 15px;
+                            border-radius: 8px;
+                            border-left: 4px solid #e74c3c;
+                        ">
+                            <p style="color: #e6edf3; margin: 0 0 5px 0; font-weight: 500;">
+                                🔴 Inverter 2
+                            </p>
+                            <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 13px;">
+                                Output dropped by 40%
+                            </p>
+                            <p style="color: #58a6ff; margin: 0; font-size: 12px;">
+                                ➜ Action: Check for connection issues or thermal problems
+                            </p>
+                        </div>
+
+                        <div style="
+                            background: #0d1117;
+                            padding: 15px;
+                            border-radius: 8px;
+                            border-left: 4px solid #e74c3c;
+                        ">
+                            <p style="color: #e6edf3; margin: 0 0 5px 0; font-weight: 500;">
+                                🔴 Panel B
+                            </p>
+                            <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 13px;">
+                                Operating below threshold
+                            </p>
+                            <p style="color: #58a6ff; margin: 0; font-size: 12px;">
+                                ➜ Action: Schedule cleaning and inspection
+                            </p>
+                        </div>
+
+                        <div style="
+                            background: #0d1117;
+                            padding: 15px;
+                            border-radius: 8px;
+                            border-left: 4px solid #f1c40f;
+                        ">
+                            <p style="color: #e6edf3; margin: 0 0 5px 0; font-weight: 500;">
+                                🟡 Sensor 5
+                            </p>
+                            <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 13px;">
+                                Moderate efficiency detected
+                            </p>
+                            <p style="color: #58a6ff; margin: 0; font-size: 12px;">
+                                ➜ Action: Monitor closely, escalate if deteriorates
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="
+                        margin-top: 20px;
+                        padding: 15px;
+                        background: rgba(46, 204, 113, 0.1);
+                        border-radius: 8px;
+                        border-left: 4px solid #2ecc71;
+                    ">
+                        <p style="color: #e6edf3; margin: 0; font-size: 14px;">
+                            💡 <b>Recommendation:</b> Generate the maintenance report above to get detailed device logs and create a work order for your technical team.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔹 SYSTEM HEALTH SUMMARY -->
+            <div style="
+                background: #0d1117;
+                padding: 20px;
+                border-radius: 12px;
+                border: 1px solid #30363d;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0; font-size: 13px;">
+                    🔄 Dashboard auto-refreshes every 10 seconds | Last sync: @currentTime
+                </p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    DashboardDto? dashboard;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dashboard = await Http.GetFromJsonAsync<DashboardDto>("api/dashboard");
+    }
+    async Task GenerateReport()
+    {
+        var report = await Http.GetFromJsonAsync<ReportDto>("api/report");
+
+        var content = $@"
+        EnergyPulse Report
+        ------------------------
+        Site: {report.Site}
+
+        Total Devices: {report.TotalDevices}
+        Active Devices: {report.ActiveDevices}
+
+        Efficiency: {report.AverageEfficiency}%
+
+        Alerts:
+        High: {report.HighAlerts}
+
+        Generated At: {report.GeneratedAt}
+        ";
+
+        var bytes = System.Text.Encoding.UTF8.GetBytes(content);
+        var base64 = Convert.ToBase64String(bytes);
+
+        await JS.InvokeVoidAsync("downloadFile", "report.txt", base64);
+    }
+    string currentTime = DateTime.Now.ToString("hh:mm tt");
+
+    protected override void OnInitialized()
+    {
+        var timer = new System.Timers.Timer(10000); // every 10 sec
+        timer.Elapsed += (s, e) =>
+        {
+            currentTime = DateTime.Now.ToString("hh:mm tt");
+            InvokeAsync(StateHasChanged);
+        };
+        timer.Start();
+    }
+
+    public class DashboardDto
+    {
+        public int TotalDevices { get; set; }
+        public int ActiveDevices { get; set; }
+        public double AverageEfficiency { get; set; }
+        public int TotalAlerts { get; set; }
+        public int HighAlerts { get; set; }
+        public int MediumAlerts { get; set; }
+    }
+    public class ReportDto
+    {
+        public string Site { get; set; }
+        public int TotalDevices { get; set; }
+        public int ActiveDevices { get; set; }
+        public double AverageEfficiency { get; set; }
+        public int HighAlerts { get; set; }
+        public DateTime GeneratedAt { get; set; }
+    }
+}

@@ -1,0 +1,507 @@
+﻿@page "/report"
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<div style="
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    min-height: 100vh;
+">
+    <div style="width: 100%; max-width: 1400px;">
+
+        <!-- 🔹 HEADER -->
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="color: #58a6ff; margin: 0; font-size: 28px;">
+                EnergyPulse – Maintenance & Analytics
+            </h2>
+
+            <p style="color: #8b949e; margin: 8px 0; font-size: 14px;">
+                Comprehensive system performance and compliance reporting.
+            </p>
+
+            <h1 style="color: #2ecc71; margin: 15px 0 5px 0; font-size: 32px;">
+                📄 Maintenance Report
+            </h1>
+
+            <p style="color: #8b949e; font-size: 13px; margin: 0;">
+                Report generated: @(report?.GeneratedAt.ToString("yyyy-MM-dd HH:mm:ss") ?? "Loading...")
+            </p>
+        </div>
+
+        @if (report == null)
+        {
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 60px 20px;
+                background: #161b22;
+                border-radius: 12px;
+                border: 1px solid #30363d;
+            ">
+                <p style="color: #8b949e; font-size: 18px; margin: 0;">
+                    ⏳ Loading report data...
+                </p>
+            </div>
+        }
+        else
+        {
+            <!-- 🔹 REPORT SUMMARY CARDS -->
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 30px;
+            ">
+                <div style="
+                    background: #161b22;
+                    padding: 18px 22px;
+                    border-radius: 10px;
+                    border: 1px solid #30363d;
+                    color: white;
+                    text-align: center;
+                ">
+                    <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Total Devices</p>
+                    <p style="color: #58a6ff; margin: 0; font-size: 24px; font-weight: bold;">@report.TotalDevices</p>
+                </div>
+
+                <div style="
+                    background: #161b22;
+                    padding: 18px 22px;
+                    border-radius: 10px;
+                    border: 1px solid #30363d;
+                    color: white;
+                    text-align: center;
+                ">
+                    <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Active Devices</p>
+                    <p style="color: #2ecc71; margin: 0; font-size: 24px; font-weight: bold;">@report.ActiveDevices / @report.TotalDevices</p>
+                </div>
+
+                <div style="
+                    background: #161b22;
+                    padding: 18px 22px;
+                    border-radius: 10px;
+                    border: 1px solid #30363d;
+                    color: white;
+                    text-align: center;
+                ">
+                    <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Performance</p>
+                    <p style="color: @(report.AverageEfficiency >= 80 ? "#2ecc71" : report.AverageEfficiency >= 60 ? "#f1c40f" : "#e74c3c"); margin: 0; font-size: 24px; font-weight: bold;">@report.AverageEfficiency%</p>
+                </div>
+
+                <div style="
+                    background: #161b22;
+                    padding: 18px 22px;
+                    border-radius: 10px;
+                    border: 1px solid #30363d;
+                    color: white;
+                    text-align: center;
+                ">
+                    <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Total Alerts</p>
+                    <p style="color: @(report.TotalAlerts > 0 ? "#ff6b6b" : "#2ecc71"); margin: 0; font-size: 24px; font-weight: bold;">@report.TotalAlerts</p>
+                </div>
+            </div>
+
+            <!-- 🔹 MAIN REPORT SECTION -->
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 25px;
+                margin-bottom: 30px;
+            ">
+                <!-- Site Overview Card -->
+                <div style="
+                    background: #161b22;
+                    border: 1px solid #30363d;
+                    padding: 30px;
+                    border-radius: 14px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                ">
+                    <h3 style="color: #58a6ff; margin: 0 0 20px 0; font-size: 18px;">
+                        🏭 Site Information
+                    </h3>
+
+                    <div style="display: grid; gap: 15px;">
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #58a6ff;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Site Name</span>
+                            <span style="color: #e6edf3; font-weight: 600;">@report.Site</span>
+                        </div>
+
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #238636;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Report ID</span>
+                            <span style="color: #2ecc71; font-weight: 600;">@report.GeneratedAt.ToString("yyyyMMddHHmmss")</span>
+                        </div>
+
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #9d4edd;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Generated</span>
+                            <span style="color: #9d4edd; font-weight: 600;">@report.GeneratedAt.ToString("g")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Device Status Card -->
+                <div style="
+                    background: #161b22;
+                    border: 1px solid #30363d;
+                    padding: 30px;
+                    border-radius: 14px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                ">
+                    <h3 style="color: #58a6ff; margin: 0 0 20px 0; font-size: 18px;">
+                        📊 Device Status
+                    </h3>
+
+                    <div style="display: grid; gap: 15px;">
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #58a6ff;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Total Devices</span>
+                            <span style="color: #58a6ff; font-weight: 600; font-size: 18px;">@report.TotalDevices</span>
+                        </div>
+
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #2ecc71;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Active</span>
+                            <span style="color: #2ecc71; font-weight: 600; font-size: 18px;">@report.ActiveDevices</span>
+                        </div>
+
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid #e74c3c;
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Inactive</span>
+                            <span style="color: #e74c3c; font-weight: 600; font-size: 18px;">@(report.TotalDevices - report.ActiveDevices)</span>
+                        </div>
+
+                        <div style="
+                            padding: 12px;
+                            background: rgba(46, 204, 113, 0.1);
+                            border-radius: 8px;
+                            border-left: 4px solid #2ecc71;
+                        ">
+                            <p style="color: #8b949e; font-size: 12px; margin: 0;">
+                                Uptime: <b style="color: #2ecc71;">@Math.Round((double)report.ActiveDevices / report.TotalDevices * 100, 1)%</b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics Card -->
+                <div style="
+                    background: #161b22;
+                    border: 1px solid #30363d;
+                    padding: 30px;
+                    border-radius: 14px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                ">
+                    <h3 style="color: #58a6ff; margin: 0 0 20px 0; font-size: 18px;">
+                        ⚡ Performance Metrics
+                    </h3>
+
+                    <div style="display: grid; gap: 15px;">
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px;
+                            background: #0d1117;
+                            border-radius: 8px;
+                            border-left: 4px solid @(report.AverageEfficiency >= 80 ? "#2ecc71" : report.AverageEfficiency >= 60 ? "#f1c40f" : "#e74c3c");
+                        ">
+                            <span style="color: #8b949e; font-size: 14px;">Average Efficiency</span>
+                            <div>
+                                <span style="color: @(report.AverageEfficiency >= 80 ? "#2ecc71" : report.AverageEfficiency >= 60 ? "#f1c40f" : "#e74c3c"); font-weight: 600; font-size: 18px;">@report.AverageEfficiency%</span>
+                                <p style="color: #8b949e; font-size: 11px; margin: 3px 0 0 0;">
+                                    @(report.AverageEfficiency >= 80 ? "Optimal" : report.AverageEfficiency >= 60 ? "Good" : "Critical")
+                                </p>
+                            </div>
+                        </div>
+
+                        <div style="
+                            padding: 12px;
+                            background: @(report.AverageEfficiency >= 80 ? "rgba(46, 204, 113, 0.1)" : report.AverageEfficiency >= 60 ? "rgba(241, 196, 15, 0.1)" : "rgba(231, 76, 60, 0.1)");
+                            border-radius: 8px;
+                            border-left: 4px solid @(report.AverageEfficiency >= 80 ? "#2ecc71" : report.AverageEfficiency >= 60 ? "#f1c40f" : "#e74c3c");
+                        ">
+                            <p style="color: #e6edf3; margin: 0; font-size: 13px;">
+                                @(report.AverageEfficiency >= 80 ? "✅ System operating optimally. No immediate action required."
+                                    : report.AverageEfficiency >= 60 ? "⚠️ Monitor closely. Potential optimization opportunities exist."
+                                    : "❌ Critical issues detected. Immediate maintenance recommended.")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔹 ALERTS SUMMARY -->
+            <div style="
+                background: #161b22;
+                padding: 30px;
+                border-radius: 14px;
+                color: white;
+                border: 1px solid #30363d;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                margin-bottom: 30px;
+            ">
+                <h3 style="
+                    color: #ff6b6b;
+                    margin: 0 0 20px 0;
+                    font-size: 18px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                ">
+                    🔴 Alert Summary
+                </h3>
+
+                <div style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 15px;
+                ">
+                    <div style="
+                        background: #0d1117;
+                        padding: 15px;
+                        border-radius: 8px;
+                        border-left: 4px solid #e74c3c;
+                    ">
+                        <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; font-weight: 600;">High Priority Alerts</p>
+                        <p style="color: #e74c3c; margin: 0; font-size: 24px; font-weight: bold;">@report.HighAlerts</p>
+                    </div>
+
+                    <div style="
+                        background: #0d1117;
+                        padding: 15px;
+                        border-radius: 8px;
+                        border-left: 4px solid #f1c40f;
+                    ">
+                        <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; font-weight: 600;">Medium Priority Alerts</p>
+                        <p style="color: #f1c40f; margin: 0; font-size: 24px; font-weight: bold;">@(report.TotalAlerts - report.HighAlerts)</p>
+                    </div>
+
+                    <div style="
+                        background: #0d1117;
+                        padding: 15px;
+                        border-radius: 8px;
+                        border-left: 4px solid #2ecc71;
+                    ">
+                        <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; font-weight: 600;">Total Alerts</p>
+                        <p style="color: #e6edf3; margin: 0; font-size: 24px; font-weight: bold;">@report.TotalAlerts</p>
+                    </div>
+                </div>
+
+                <div style="
+                    margin-top: 20px;
+                    padding: 15px;
+                    background: @(report.HighAlerts > 0 ? "rgba(231, 76, 60, 0.1)" : "rgba(46, 204, 113, 0.1)");
+                    border-radius: 8px;
+                    border-left: 4px solid @(report.HighAlerts > 0 ? "#e74c3c" : "#2ecc71");
+                ">
+                    <p style="color: #e6edf3; margin: 0; font-size: 14px;">
+                        @(report.HighAlerts > 0 
+                            ? "⚠️ <b>Action Required:</b> High-priority alerts detected. Review and address immediately."
+                            : "✅ <b>Good Status:</b> No critical alerts. System is operating normally.")
+                    </p>
+                </div>
+            </div>
+
+            <!-- 🔹 ACTION BUTTONS -->
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 30px;
+            ">
+                <button @onclick="DownloadReportPDF"
+                        style="
+                            background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+                            color: white;
+                            padding: 14px 24px;
+                            border: none;
+                            border-radius: 10px;
+                            font-size: 15px;
+                            font-weight: 500;
+                            cursor: pointer;
+                            box-shadow: 0 4px 12px rgba(31, 111, 235, 0.3);
+                            transition: all 0.3s ease;
+                        ">
+                    📄 Download as PDF
+                </button>
+
+                <button @onclick="DownloadReportCSV"
+                        style="
+                            background: linear-gradient(135deg, #238636 0%, #1a6e2b 100%);
+                            color: white;
+                            padding: 14px 24px;
+                            border: none;
+                            border-radius: 10px;
+                            font-size: 15px;
+                            font-weight: 500;
+                            cursor: pointer;
+                            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+                            transition: all 0.3s ease;
+                        ">
+                    📊 Download as CSV
+                </button>
+
+                <button @onclick="DownloadReportTXT"
+                        style="
+                            background: linear-gradient(135deg, #6e40aa 0%, #533097 100%);
+                            color: white;
+                            padding: 14px 24px;
+                            border: none;
+                            border-radius: 10px;
+                            font-size: 15px;
+                            font-weight: 500;
+                            cursor: pointer;
+                            box-shadow: 0 4px 12px rgba(110, 64, 170, 0.3);
+                            transition: all 0.3s ease;
+                        ">
+                    📋 Download as Text
+                </button>
+            </div>
+
+            <!-- 🔹 REPORT FOOTER -->
+            <div style="
+                background: #0d1117;
+                padding: 20px;
+                border-radius: 12px;
+                border: 1px solid #30363d;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0; font-size: 13px;">
+                    📋 Report generated on @report.GeneratedAt.ToString("MMMM dd, yyyy") at @report.GeneratedAt.ToString("hh:mm tt") UTC | Report Version: 2.0
+                </p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private ReportDto? report;
+
+    protected override async Task OnInitializedAsync()
+    {
+        report = await Http.GetFromJsonAsync<ReportDto>("api/report");
+    }
+
+    private async Task DownloadReportPDF()
+    {
+        var content = GenerateReportContent();
+        await JS.InvokeVoidAsync("downloadFile", "EnergyPulse-Report.pdf", content, "application/pdf");
+    }
+
+    private async Task DownloadReportCSV()
+    {
+        var content = $@"EnergyPulse Maintenance Report
+Generated: {report?.GeneratedAt:yyyy-MM-dd HH:mm:ss}
+
+Site: {report?.Site}
+Total Devices: {report?.TotalDevices}
+Active Devices: {report?.ActiveDevices}
+Inactive Devices: {report?.TotalDevices - report?.ActiveDevices}
+Average Efficiency: {report?.AverageEfficiency}%
+Total Alerts: {report?.TotalAlerts}
+High Alerts: {report?.HighAlerts}
+Medium Alerts: {report?.TotalAlerts - report?.HighAlerts}";
+
+        await JS.InvokeVoidAsync("downloadFile", "EnergyPulse-Report.csv", content, "text/csv");
+    }
+
+    private async Task DownloadReportTXT()
+    {
+        var content = GenerateReportContent();
+        await JS.InvokeVoidAsync("downloadFile", "EnergyPulse-Report.txt", content, "text/plain");
+    }
+
+    private string GenerateReportContent()
+    {
+        string status = report?.AverageEfficiency >= 80 ? "OPTIMAL" : report?.AverageEfficiency >= 60 ? "GOOD" : "CRITICAL";
+        string systemStatus = report?.HighAlerts > 0 ? "ACTION REQUIRED" : "HEALTHY";
+        string recommendation = report?.AverageEfficiency >= 80 
+            ? "System is operating optimally. Maintain current operational parameters."
+            : report?.AverageEfficiency >= 60 
+            ? "Monitor closely for potential optimization opportunities."
+            : "Critical issues detected. Immediate maintenance is recommended.";
+
+        double uptime = Math.Round((double)report?.ActiveDevices / report?.TotalDevices * 100 ?? 0, 1);
+
+        return $@"EnergyPulse - Maintenance Report
+Generated: {report?.GeneratedAt:yyyy-MM-dd HH:mm:ss}
+Site: {report?.Site}
+Report ID: {report?.GeneratedAt:yyyyMMddHHmmss}
+
+SITE INFORMATION
+Site Name: {report?.Site}
+Total Devices: {report?.TotalDevices}
+Active Devices: {report?.ActiveDevices}
+Inactive Devices: {report?.TotalDevices - report?.ActiveDevices}
+Uptime: {uptime}%
+
+PERFORMANCE METRICS
+Average Efficiency: {report?.AverageEfficiency}%
+Status: {status}
+
+ALERT SUMMARY
+High Priority Alerts: {report?.HighAlerts}
+Medium Priority Alerts: {report?.TotalAlerts - report?.HighAlerts}
+Total Alerts: {report?.TotalAlerts}
+System Status: {systemStatus}
+
+RECOMMENDATIONS
+{recommendation}
+
+Report Version: 2.0
+For questions, contact support@energypulse.io";
+    }
+
+    public class ReportDto
+    {
+        public string Site { get; set; }
+        public int TotalDevices { get; set; }
+        public int ActiveDevices { get; set; }
+        public double AverageEfficiency { get; set; }
+        public int TotalAlerts { get; set; }
+        public int HighAlerts { get; set; }
+        public DateTime GeneratedAt { get; set; }
+    }
+}
