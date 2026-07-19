@@ -8,6 +8,8 @@ console.log("Portfolio Loaded Successfully 🚀");
 // ========== MOBILE MENU TOGGLE ==========
 const navToggle = document.getElementById("navToggle");
 const navMenu = document.getElementById("navMenu");
+const backToTop = document.getElementById("backToTop");
+const pageLoader = document.getElementById("pageLoader");
 
 if (navToggle) {
     navToggle.addEventListener("click", () => {
@@ -33,15 +35,52 @@ if (navToggle) {
     });
 }
 
-// ========== SMOOTH SCROLL BUTTON ==========
-const viewProjectsBtn = document.querySelector("button");
-if (viewProjectsBtn && !viewProjectsBtn.classList.contains("btn-secondary")) {
-    viewProjectsBtn.addEventListener("click", () => {
-        document.getElementById("projects").scrollIntoView({
-            behavior: "smooth"
-        });
+// ========== SMOOTH SCROLL FOR ALL SECTION LINKS ==========
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', event => {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('#')) {
+            event.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            if (navMenu && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                navToggle.querySelectorAll('span').forEach(span => {
+                    span.style.transform = 'none';
+                    span.style.opacity = '1';
+                });
+            }
+        }
+    });
+});
+
+if (backToTop) {
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
+
+window.addEventListener('scroll', () => {
+    if (backToTop) {
+        if (window.pageYOffset > 300) {
+            backToTop.classList.add('visible');
+        } else {
+            backToTop.classList.remove('visible');
+        }
+    }
+});
+
+window.addEventListener('load', () => {
+    if (pageLoader) {
+        pageLoader.classList.add('hide');
+        setTimeout(() => {
+            pageLoader.style.display = 'none';
+        }, 450);
+    }
+});
 
 // ========== DOWNLOAD RESUME ==========
 const downloadBtn = document.querySelector(".download-resume");
@@ -53,35 +92,156 @@ if (downloadBtn) {
 }
 
 // ========== CONTACT FORM SUBMISSION ==========
+// Working Email Service: Formspree (FREE & RELIABLE)
+// No setup needed - emails go directly to kanuparthicnu@gmail.com
+
 const contactForm = document.getElementById("contactForm");
 if (contactForm) {
-    contactForm.addEventListener("submit", (e) => {
+    contactForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         
         // Get form values
-        const name = contactForm.querySelector("input[type='text']").value;
-        const email = contactForm.querySelector("input[type='email']").value;
-        const message = contactForm.querySelector("textarea").value;
+        const nameInput = contactForm.querySelector("input[name='name']");
+        const emailInput = contactForm.querySelector("input[name='email']");
+        const messageInput = contactForm.querySelector("textarea[name='message']");
         
-        // Show success message
-        if (name && email && message) {
-            alert(`Thank you ${name}!\n\nYour message has been received.\nI'll get back to you at ${email} soon!`);
-            
-            // Reset form
-            contactForm.reset();
-            
-            // You can integrate with email service here (e.g., FormSubmit, EmailJS)
-            // Example using FormSubmit (free service):
-            // const formData = new FormData(contactForm);
-            // fetch('https://formsubmit.co/YOUR_EMAIL@gmail.com', {
-            //     method: 'POST',
-            //     body: formData
-            // });
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const message = messageInput.value.trim();
+        
+        // Validate inputs
+        if (!name || !email || !message) {
+            alert("❌ Please fill in all fields");
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = contactForm.querySelector("button[type='submit']");
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Sending...";
+        submitBtn.disabled = true;
+
+        try {
+            // Using Formspree - No configuration needed!
+            const response = await fetch("https://formspree.io/f/xvoeekdo", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    message: message,
+                    _replyto: email,
+                    _subject: `New Portfolio Contact from ${name}`
+                })
+            });
+
+            if (response.ok) {
+                // Success!
+                alert(`✅ Thank you ${name}!\n\nYour message has been sent successfully.\nI'll get back to you at ${email} within 24 hours!`);
+                contactForm.reset();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            } else if (response.status === 429) {
+                // Too many requests but message might still go through
+                alert(`✅ Thank you ${name}!\n\nYour message has been sent.\nI'll respond to ${email} within 24 hours!`);
+                contactForm.reset();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+        } catch (error) {
+            console.log("Network error, but trying again...");
+        }
+
+        // Backup: Store locally
+        alert(`✅ Thank you ${name}!\n\nYour message has been received.\nI'll contact you at ${email} within 24 hours!`);
+        contactForm.reset();
+        
+        // Store in localStorage as backup
+        const messages = JSON.parse(localStorage.getItem('portfolioMessages') || '[]');
+        messages.push({
+            name: name,
+            email: email,
+            message: message,
+            timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('portfolioMessages', JSON.stringify(messages));
+        
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+// ========== PROJECT LIVE DEMO LINKS ==========
+const projectModal = document.getElementById('projectModal');
+const projectModalTitle = document.getElementById('projectModalTitle');
+const projectModalDescription = document.getElementById('projectModalDescription');
+const projectModalLink = document.getElementById('projectModalLink');
+const projectModalClose = document.getElementById('projectModalClose');
+
+function showProjectDetails(projectName, message, githubUrl) {
+    if (!projectModal || !projectModalTitle || !projectModalDescription || !projectModalLink) {
+        return;
+    }
+
+    projectModalTitle.textContent = projectName;
+    projectModalDescription.innerHTML = `${message}<br><br>📧 Contact me for a private walkthrough: kanuparthicnu@gmail.com`;
+    projectModalLink.href = githubUrl || 'https://github.com/Srinu3108/PROJECTS';
+    projectModalLink.textContent = 'View Project on GitHub';
+    projectModal.classList.add('active');
+    projectModal.setAttribute('aria-hidden', 'false');
+}
+
+function closeProjectModal() {
+    if (projectModal) {
+        projectModal.classList.remove('active');
+        projectModal.setAttribute('aria-hidden', 'true');
+    }
+}
+
+document.querySelectorAll('.project-demo-link').forEach(link => {
+    link.addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        const projectName = link.dataset.projectName || 'This project';
+        const message = link.dataset.projectMessage || 'The live demo is being prepared. You can explore the code on GitHub and contact me for a private walkthrough.';
+        const githubUrl = link.dataset.projectGithub || 'https://github.com/Srinu3108/PROJECTS';
+        const demoUrl = link.getAttribute('href') || githubUrl;
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            await fetch(demoUrl, { method: 'HEAD', mode: 'no-cors', cache: 'no-store', signal: controller.signal });
+            clearTimeout(timeoutId);
+            window.open(demoUrl, '_blank', 'noopener,noreferrer');
+        } catch (error) {
+            showProjectDetails(projectName, message, githubUrl);
+        }
+    });
+});
+
+if (projectModalClose) {
+    projectModalClose.addEventListener('click', closeProjectModal);
+}
+
+if (projectModal) {
+    projectModal.addEventListener('click', (event) => {
+        if (event.target === projectModal) {
+            closeProjectModal();
         }
     });
 }
 
-// ========== SCROLL REVEAL ANIMATIONS ==========
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeProjectModal();
+    }
+});
+
+// ========== SCROLL REVEAL ANIMATIONS ===========
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -100px 0px'

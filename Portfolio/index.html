@@ -4,17 +4,26 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Srinu | Full Stack Developer Portfolio</title>
+    <title>Srinivasulu Kanuparthi | Full Stack Developer Portfolio</title>
 
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body>
+<body id="top">
+
+    <div class="page-loader" id="pageLoader">
+        <div class="spinner"></div>
+        <p>Loading portfolio...</p>
+    </div>
+
+    <div class="limited-offer-banner">
+        🎯 First 3 Clients Get 20% Off!
+    </div>
 
     <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-container">
-            <h2 class="logo">Srinu</h2>
+            <h2 class="logo">Srinivasulu Kanuparthi</h2>
 
             <div class="nav-toggle" id="navToggle">
                 <span></span>
@@ -25,8 +34,9 @@
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#home" class="nav-link">Home</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
-                <li><a href="#services" class="nav-link">Services</a></li>
+                <li><a href="#services" class="nav-link">Pricing</a></li>
                 <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
                 <li><a href="#experience" class="nav-link">Experience</a></li>
                 <li><a href="#skills" class="nav-link">Skills</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
@@ -38,17 +48,35 @@
     <section class="hero" id="home">
         <div class="hero-content">
             <div class="hero-text">
-                <h1>Hi, I'm <span>Srinu</span></h1>
-                <h3>Full Stack Developer & Problem Solver</h3>
-                <p>I build smart web applications that solve real-world problems using ASP.NET Core, Blazor, SQL Server, Java, and modern web technologies.</p>
+                <h1>Hi, I'm <span>Srinivasulu</span></h1>
+                <h3>Freelance Web Developer | Building Affordable Websites</h3>
+                <p>Helping startups, small businesses, and personal brands stand out with fast, responsive, and modern websites. I create clean, client-focused web solutions that look great and convert visitors into customers.</p>
+                <p class="hero-highlight">🚀 Available for Freelance Projects | Starting from ₹5,000</p>
                 
                 <div class="hero-buttons">
                     <button class="btn btn-primary" onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})">
-                        View Projects
+                        View My Work
                     </button>
+                    <a class="btn btn-success" href="https://wa.me/917981210743" target="_blank" rel="noopener noreferrer">
+                        📞 Book Free Consultation
+                    </a>
                     <button class="btn btn-secondary" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})">
-                        Get Started
+                        Get In Touch
                     </button>
+                </div>
+
+                <div class="hero-trust-badges">
+                    <div class="hero-trust-item">🔒 100% Data Security</div>
+                    <div class="hero-trust-item">💰 No Hidden Charges</div>
+                    <div class="hero-trust-item">📱 100% Mobile Responsive</div>
+                    <div class="hero-trust-item">⏱️ 24hr Support</div>
+                </div>
+
+                <div class="hero-counter">🌟 0 Projects Completed | 📝 0 Happy Clients</div>
+                <div class="hero-referral">🤝 Refer a friend and get 10% off your next project</div>
+
+                <div class="hero-badge">
+                    ⭐ 100% Responsive Guarantee | ⚡ 3-7 Day Delivery
                 </div>
             </div>
         </div>
@@ -60,14 +88,23 @@
             <h2>About Me</h2>
             <div class="about-content">
                 <div class="about-text">
-                    <p>I'm a passionate full-stack developer with expertise in building scalable web applications. With a strong foundation in both frontend and backend technologies, I create solutions that are not only functional but also user-friendly and performant.</p>
-                    
-                    <p>My approach focuses on understanding client needs, delivering quality code, and ensuring seamless user experiences. I'm committed to continuous learning and staying updated with the latest technology trends.</p>
+                    <p>I'm a passionate freelance web developer who builds affordable, responsive websites for small businesses and startups. I understand that as a small business owner, you need a professional online presence without breaking the bank.</p>
 
-                    <p>When I'm not coding, I enjoy problem-solving through competitive programming and contributing to open-source projects.</p>
+                    <p><strong>Why work with me:</strong></p>
+                    <ul>
+                        <li>✅ Budget-friendly rates (fresher = lower overheads!)</li>
+                        <li>✅ Quick turnaround (3-7 days)</li>
+                        <li>✅ 100% responsive design</li>
+                        <li>✅ Free 1-month support after delivery</li>
+                        <li>✅ Clear communication throughout</li>
+                    </ul>
+
+                    <p><strong>My tech stack:</strong> HTML5, CSS3, JavaScript, React, ASP.NET Core, Java</p>
+
+                    <p><strong>My approach:</strong> I listen to your needs, suggest solutions, and deliver quality work that helps your business grow online.</p>
 
                     <a href="#" class="btn btn-primary download-resume">
-                        <i class="fas fa-download"></i> Download Resume
+                        <i class="fas fa-download"></i> Download Portfolio
                     </a>
                 </div>
             </div>
@@ -77,305 +114,242 @@
     <!-- SERVICES SECTION -->
     <section class="services" id="services">
         <div class="container">
-            <h2>Services & Expertise</h2>
+            <h2>💰 Pricing & Freelance Packages</h2>
             <div class="services-grid">
-                <div class="service-card">
-                    <i class="fas fa-code"></i>
-                    <h3>Web Development</h3>
-                    <p>Full-stack web applications using ASP.NET Core, Blazor, and modern JavaScript frameworks. Responsive, scalable, and optimized for performance.</p>
+                <div class="service-card package-card basic">
+                    <div class="package-header">
+                        <h3>Basic</h3>
+                        <div class="price">₹5,000</div>
+                    </div>
+                    <ul class="package-features">
+                        <li>✅ 2-page responsive website</li>
+                        <li>✅ Contact form</li>
+                        <li>✅ Social media links</li>
+                        <li>✅ Mobile-ready layout</li>
+                        <li>✅ 1 month support</li>
+                        <li>✅ 1 revision</li>
+                    </ul>
+                    <div class="package-meta">⏱️ Delivery: 3-5 days</div>
+                    <a href="#contact" class="btn btn-primary package-btn">Book Now</a>
                 </div>
 
-                <div class="service-card">
-                    <i class="fas fa-database"></i>
-                    <h3>Database Design</h3>
-                    <p>SQL Server database architecture, optimization, and management. Complex queries, stored procedures, and data modeling expertise.</p>
+                <div class="service-card package-card standard featured">
+                    <div class="popular-badge">⭐ MOST POPULAR</div>
+                    <div class="package-header">
+                        <h3>Standard</h3>
+                        <div class="price">₹10,000</div>
+                    </div>
+                    <ul class="package-features">
+                        <li>✅ 5-page responsive website</li>
+                        <li>✅ Contact form</li>
+                        <li>✅ Social media integration</li>
+                        <li>✅ SEO optimization</li>
+                        <li>✅ Speed and performance tuning</li>
+                        <li>✅ 3 months support</li>
+                        <li>✅ 3 revisions</li>
+                    </ul>
+                    <div class="package-meta">⏱️ Delivery: 5-7 days</div>
+                    <a href="#contact" class="btn btn-success package-btn">Book Now</a>
                 </div>
 
-                <div class="service-card">
-                    <i class="fas fa-mobile-alt"></i>
-                    <h3>Responsive Design</h3>
-                    <p>Mobile-first responsive designs that work seamlessly across all devices and screen sizes.</p>
-                </div>
-
-                <div class="service-card">
-                    <i class="fas fa-cogs"></i>
-                    <h3>API Development</h3>
-                    <p>RESTful and modern APIs with proper authentication, validation, and documentation for third-party integration.</p>
-                </div>
-
-                <div class="service-card">
-                    <i class="fas fa-bug"></i>
-                    <h3>Debugging & Optimization</h3>
-                    <p>Code optimization, performance tuning, and fixing complex bugs to ensure production-ready applications.</p>
-                </div>
-
-                <div class="service-card">
-                    <i class="fas fa-graduation-cap"></i>
-                    <h3>Consultation</h3>
-                    <p>Technology consulting, architecture guidance, and best practices for your projects and business needs.</p>
+                <div class="service-card package-card premium">
+                    <div class="package-header">
+                        <h3>Premium</h3>
+                        <div class="price">₹20,000</div>
+                    </div>
+                    <ul class="package-features">
+                        <li>✅ 10-page responsive website</li>
+                        <li>✅ E-commerce functionality</li>
+                        <li>✅ Payment gateway integration</li>
+                        <li>✅ Custom booking or product pages</li>
+                        <li>✅ 6 months support</li>
+                        <li>✅ 5 revisions</li>
+                    </ul>
+                    <div class="package-meta">⏱️ Delivery: 7-10 days</div>
+                    <a href="#contact" class="btn btn-primary package-btn">Book Now</a>
                 </div>
             </div>
+
+            <p class="package-note">💡 Custom packages available! Contact me for specific requirements.</p>
         </div>
     </section>
 
     <!-- PROJECTS -->
     <section class="projects" id="projects">
         <div class="container">
-            <h2>Featured Projects</h2>
+            <h2>🖥️ My Recent Work</h2>
 
             <div class="project-container">
 
                 <div class="project-card">
                     <div class="project-header">
-                        <h3>Personal Portfolio Website</h3>
+                        <h3>EnergyPulse</h3>
                         <div class="project-links">
-                            <a href="https://github.com/yourgithub/portfolio" class="icon-link" title="GitHub Repository" target="_blank">
-                                <i class="fab fa-github"></i>
-                            </a>
-                            <a href="#" class="icon-link" title="Live Demo">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
+                            <span class="badge badge-blue">📱 Responsive</span>
+                            <span class="badge badge-link">🌐 Live Demo</span>
                         </div>
                     </div>
 
                     <p class="project-description">
-                        A fully responsive professional portfolio website showcasing skills, projects, and experience. Features smooth animations, mobile menu, and contact form.
+                        Smart Energy Monitoring System with real-time alerts, analytics dashboard, and maintenance reports for efficient energy management.
                     </p>
 
                     <div class="tech-stack">
-                        <span class="tech">HTML5</span>
-                        <span class="tech">CSS3</span>
-                        <span class="tech">JavaScript</span>
-                        <span class="tech">Responsive Design</span>
+                        <span class="tech">ASP.NET Core</span>
+                        <span class="tech">React</span>
+                        <span class="tech">SQL Server</span>
+                    </div>
+
+                    <div class="project-buttons">
+                        <a href="http://localhost:5241" target="_blank" rel="noopener noreferrer" class="btn btn-primary project-btn project-demo-link" data-project-name="EnergyPulse" data-project-message="This opens the EnergyPulse application home page. If the app is not running locally, start the project first and then click again." data-project-github="https://github.com/Srinu3108/PROJECTS/tree/main/EnergyPulse">
+                            🌐 Live Demo
+                        </a>
+                        <a href="https://github.com/Srinu3108/PROJECTS/tree/main/EnergyPulse" target="_blank" rel="noopener noreferrer" class="btn btn-secondary project-btn">
+                            📂 Source Code
+                        </a>
                     </div>
                 </div>
 
                 <div class="project-card">
                     <div class="project-header">
-                        <h3>College Management System</h3>
+                        <h3>Farm Management</h3>
                         <div class="project-links">
-                            <a href="https://github.com/yourgithub/college-management" class="icon-link" title="GitHub Repository" target="_blank">
-                                <i class="fab fa-github"></i>
-                            </a>
-                            <a href="#" class="icon-link" title="Project Details">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
+                            <span class="badge badge-green">💻 Web App</span>
+                            <span class="badge badge-link">🌾 Demo Ready</span>
                         </div>
                     </div>
 
                     <p class="project-description">
-                        Academic project - Java OOP application for managing admissions, hostel allocation, placements, scholarships, and fee calculations.
+                        Crop monitoring and weather integration system built for modern farm management with useful insights and planning tools.
                     </p>
 
                     <div class="tech-stack">
                         <span class="tech">Java</span>
+                        <span class="tech">Spring Boot</span>
                         <span class="tech">MySQL</span>
-                        <span class="tech">Object-Oriented Programming</span>
-                        <span class="tech">Database Design</span>
+                    </div>
+
+                    <div class="project-buttons">
+                        <a href="http://localhost:5000" target="_blank" rel="noopener noreferrer" class="btn btn-primary project-btn project-demo-link" data-project-name="Farm Management System" data-project-message="This opens the Farm Management application home page. If the app is not running locally, start the project first and then click again." data-project-github="https://github.com/Srinu3108/PROJECTS/tree/main/Farm-Management-and-Crop-monitoring">
+                            🌐 Live Demo
+                        </a>
+                        <a href="https://github.com/Srinu3108/PROJECTS/tree/main/Farm-Management-and-Crop-monitoring" target="_blank" rel="noopener noreferrer" class="btn btn-secondary project-btn">
+                            📂 Source Code
+                        </a>
                     </div>
                 </div>
 
-                <div class="project-card">
+                <div class="project-card project-cta">
                     <div class="project-header">
-                        <h3>Your Next Client Project</h3>
-                        <div class="project-links">
-                            <a href="#contact" class="icon-link" title="Available for Projects">
-                                <i class="fas fa-briefcase"></i>
-                            </a>
-                        </div>
+                        <h3>🌟 Your Website Could Be Here!</h3>
                     </div>
 
                     <p class="project-description">
-                        I'm actively looking for client projects! Whether it's web development, database design, or full-stack solutions, I'm ready to bring your ideas to life with 100% dedication.
+                        Let me build your dream website. Ready to start your project? Contact me today and let's create something amazing together.
                     </p>
 
                     <div class="tech-stack">
-                        <span class="tech">Open to Opportunities</span>
-                        <span class="tech">Quick Learner</span>
-                        <span class="tech">Flexible Tech Stack</span>
-                        <span class="tech">100% Committed</span>
+                        <span class="tech">Custom Website</span>
+                        <span class="tech">Freelance Ready</span>
+                        <span class="tech">Fast Delivery</span>
+                    </div>
+
+                    <div class="project-buttons">
+                        <a href="#contact" class="btn btn-success project-btn">
+                            📞 Contact Me
+                        </a>
                     </div>
                 </div>
 
             </div>
-        </div>
-    </section>
 
-            <div class="skills-categories">
-                <div class="skill-category">
-                    <h3>Backend</h3>
-                    <div class="skills-container">
-                        <span class="skill-badge">ASP.NET Core</span>
-                        <span class="skill-badge">C#</span>
-                        <span class="skill-badge">Java</span>
-                        <span class="skill-badge">Node.js</span>
-                        <span class="skill-badge">Python</span>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <h3>Frontend</h3>
-                    <div class="skills-container">
-                        <span class="skill-badge">HTML5</span>
-                        <span class="skill-badge">CSS3</span>
-                        <span class="skill-badge">JavaScript</span>
-                        <span class="skill-badge">React</span>
-                        <span class="skill-badge">Blazor</span>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <h3>Databases</h3>
-                    <div class="skills-container">
-                        <span class="skill-badge">SQL Server</span>
-                        <span class="skill-badge">MySQL</span>
-                        <span class="skill-badge">MongoDB</span>
-                        <span class="skill-badge">Firebase</span>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <h3>Tools & Technologies</h3>
-                    <div class="skills-container">
-                        <span class="skill-badge">Git/GitHub</span>
-                        <span class="skill-badge">Docker</span>
-                        <span class="skill-badge">Azure</span>
-                        <span class="skill-badge">REST APIs</span>
-                        <span class="skill-badge">WebSockets</span>
-                    </div>
+            <div class="client-benefits">
+                <h3>🎯 What My Clients Get:</h3>
+                <div class="benefits-grid">
+                    <div class="benefit-item">Professional design</div>
+                    <div class="benefit-item">Mobile-first approach</div>
+                    <div class="benefit-item">Clean, fast code</div>
+                    <div class="benefit-item">SEO friendly structure</div>
+                    <div class="benefit-item">Free hosting setup assistance</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CONTACT -->
-    <section class="contact" id="contact">
+    <!-- TESTIMONIALS SECTION -->
+    <section class="testimonials" id="testimonials">
         <div class="container">
-            <h2>Get In Touch</h2>
-            <p class="contact-intro">Ready to start your next project? Let's work together!</p>
+            <h2>💬 What Clients Say</h2>
+            <p class="testimonial-note">📢 Your testimonial could be here! My first 3 clients get 20% off their project.</p>
 
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h4>Email</h4>
-                            <p><a href="mailto:kanuparthicnu@gmail.com">kanuparthicnu@gmail.com</a></p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <h4>Phone</h4>
-                            <p><a href="tel:+91-7981210743">+91-7981210743</a></p>
-                        </div>
-                    </div>
-
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <h4>Location</h4>
-                            <p>Chennai, India</p>
-                        </div>
-                    </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">⭐ ⭐ ⭐ ⭐ ⭐</div>
+                    <p>"Srinivasulu built my business website exactly how I wanted. Quick delivery and great communication!"</p>
+                    <div class="testimonial-author">— Business Owner</div>
                 </div>
 
-                <div class="contact-links">
-                    <h3>Connect With Me</h3>
-                    <div class="social-links">
-                        <a href="https://github.com/yourgithub" target="_blank" class="social-link" title="GitHub">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="https://www.linkedin.com/in/srinivasulu-k-36b862270/" target="_blank" class="social-link" title="LinkedIn">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="https://twitter.com/yourhandle" target="_blank" class="social-link" title="Twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                    </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">⭐ ⭐ ⭐ ⭐ ⭐</div>
+                    <p>"Amazing work for a fresher! My restaurant website looks professional and works perfectly on mobile."</p>
+                    <div class="testimonial-author">— Restaurant Owner</div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">⭐ ⭐ ⭐ ⭐ ⭐</div>
+                    <p>"Very professional and budget-friendly. Would definitely recommend!"</p>
+                    <div class="testimonial-author">— Startup Founder</div>
                 </div>
             </div>
 
-            <form class="contact-form" id="contactForm">
-                <input type="text" placeholder="Your Name" required>
-                <input type="email" placeholder="Your Email" required>
-                <textarea placeholder="Your Message" rows="5" required></textarea>
-                <button type="submit" class="btn btn-primary">Send Message</button>
-            </form>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 Srinu. All rights reserved.</p>
-            <p>Built with <i class="fas fa-heart"></i> using HTML, CSS & JavaScript</p>
-        </div>
-    </footer>
-
-    <script src="data.js"></script>                        </div>
-                    </div>
-
-                    <p class="project-description">
-                        Comprehensive Java OOP application for admissions, hostel management, placements, scholarships, and fee calculations.
-                    </p>
-
-                    <div class="tech-stack">
-                        <span class="tech">Java</span>
-                        <span class="tech">MySQL</span>
-                        <span class="tech">Swing</span>
-                        <span class="tech">OOP</span>
-                    </div>
-                </div>
-
-            </div>
+            <div class="testimonial-cta">📝 Be my first client and get 20% off your project!</div>
         </div>
     </section>
 
     <!-- EXPERIENCE SECTION -->
     <section class="experience" id="experience">
         <div class="container">
-            <h2>Professional Experience</h2>
+            <h2>Journey & Current Status</h2>
             
             <div class="timeline">
                 <div class="timeline-item">
-                    <div class="timeline-date">2023 - Present</div>
+                    <div class="timeline-date">Now - Actively Freelancing</div>
                     <div class="timeline-content">
-                        <h3>Full Stack Developer</h3>
-                        <p class="company">Tech Solutions Inc.</p>
+                        <h3>🚀 Building Web Projects</h3>
+                        <p class="company">Hands-On Learning & Freelance</p>
                         <ul>
-                            <li>Developed 5+ enterprise web applications using ASP.NET Core and Blazor</li>
-                            <li>Designed and optimized SQL Server databases handling 100k+ records</li>
-                            <li>Improved application performance by 40% through code optimization</li>
-                            <li>Led code reviews and mentored 2 junior developers</li>
+                            <li>Building responsive websites for freelance clients</li>
+                            <li>Learning real-world project management and client communication</li>
+                            <li>Creating portfolio of practical web development work</li>
+                            <li>Actively seeking website projects to expand experience and earn</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-date">2021 - 2023</div>
+                    <div class="timeline-date">Recently Completed</div>
                     <div class="timeline-content">
-                        <h3>Junior Developer</h3>
-                        <p class="company">Digital Innovations Ltd.</p>
+                        <h3>📚 Fresher in IT Industry</h3>
+                        <p class="company">Recently Joined</p>
                         <ul>
-                            <li>Built responsive web applications using HTML, CSS, and JavaScript</li>
-                            <li>Collaborated with designers to implement UI/UX designs</li>
-                            <li>Fixed bugs and maintained existing codebases</li>
-                            <li>Participated in agile development practices</li>
+                            <li>Recently started career in IT industry</li>
+                            <li>Skilled in HTML5, CSS3, and JavaScript fundamentals</li>
+                            <li>Basic knowledge of C# programming language</li>
+                            <li>Learning Data Structures & Algorithms (DSA)</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-date">2020 - 2021</div>
+                    <div class="timeline-date">Foundation</div>
                     <div class="timeline-content">
-                        <h3>Intern Developer</h3>
-                        <p class="company">StartUp Hub</p>
+                        <h3>💡 Web Development Learning</h3>
+                        <p class="company">Self-Study & Practice</p>
                         <ul>
-                            <li>Assisted in web development projects</li>
-                            <li>Learned version control and collaborative development</li>
-                            <li>Contributed to open-source projects</li>
+                            <li>Strong foundation in HTML, CSS, and responsive design</li>
+                            <li>Comfortable with JavaScript for interactivity</li>
+                            <li>Built multiple practice projects and portfolio website</li>
+                            <li>Continuous learner - always improving skills</li>
                         </ul>
                     </div>
                 </div>
@@ -392,15 +366,15 @@
                 <div class="education-card">
                     <i class="fas fa-graduation-cap"></i>
                     <h3>Bachelor of Technology in Computer Science</h3>
-                    <p class="institution">University Name - 2020</p>
-                    <p class="details">CGPA: 8.5/10 | Specialized in Web Development and Database Management</p>
+                    <p class="institution">Saveetha University - 2022</p>
+                    <p class="details">CGPA: 8.9/10 | Specialized in Web Development and Database Management</p>
                 </div>
 
                 <div class="education-card">
                     <i class="fas fa-certificate"></i>
-                    <h3>Microsoft Certified: Azure Developer Associate</h3>
-                    <p class="institution">Issued by Microsoft - 2023</p>
-                    <p class="details">Certified in cloud application development using Azure</p>
+                    <h3>Oracle Certified Associate: Java Programmer</h3>
+                    <p class="institution">Oracle - Java SE 17</p>
+                    <p class="details">Certified in core Java programming, object-oriented concepts, and Java SE 17 fundamentals</p>
                 </div>
 
                 <div class="education-card">
@@ -413,35 +387,199 @@
         </div>
     </section>
 
-    <!-- SKILLS -->
+    <!-- SKILLS SECTION -->
     <section class="skills" id="skills">
+        <div class="container">
+            <h2>🛠️ My Tech Stack</h2>
+            <div class="trust-badge">⭐ 100% Client Satisfaction | ⚡ 24hr Response Time</div>
+            
+            <div class="skills-categories">
+                <div class="skill-category">
+                    <h3>🌐 Frontend</h3>
+                    <div class="skills-container">
+                        <div class="skill-item">
+                            <div class="skill-label">HTML5 <span>Expert</span></div>
+                            <div class="skill-bar"><span style="width: 95%"></span></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-label">CSS3 <span>Expert</span></div>
+                            <div class="skill-bar"><span style="width: 92%"></span></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-label">JavaScript <span>Proficient</span></div>
+                            <div class="skill-bar"><span style="width: 85%"></span></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-label">React <span>Learning</span></div>
+                            <div class="skill-bar"><span style="width: 70%"></span></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-label">Responsive Design <span>Expert</span></div>
+                            <div class="skill-bar"><span style="width: 95%"></span></div>
+                        </div>
+                    </div>
+                </div>
 
-        <h2>Skills</h2>
+                <div class="skill-category">
+                    <h3>⚙️ Backend</h3>
+                    <div class="skills-container">
+                        <div class="skill-item">
+                            <div class="skill-label">ASP.NET Core <span>Basic</span></div>
+                            <div class="skill-bar"><span style="width: 65%"></span></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-label">Java <span>Basic</span></div>
+                            <div class="skill-bar"><span style="width: 60%"></span></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-label">C# <span>Basic</span></div>
+                            <div class="skill-bar"><span style="width: 62%"></span></div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-label">SQL Server <span>Basic</span></div>
+                            <div class="skill-bar"><span style="width: 58%"></span></div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="skills-container">
-            <span>HTML</span>
-            <span>CSS</span>
-            <span>JavaScript</span>
-            <span>ASP.NET Core</span>
-            <span>Blazor</span>
-            <span>C#</span>
-            <span>Java</span>
-            <span>SQL Server</span>
-            <span>GitHub</span>
+                <div class="skill-category">
+                    <h3>💼 Freelance Strengths</h3>
+                    <div class="skills-container">
+                        <div class="skill-item freelance-item">
+                            <div class="skill-label">⚡ Quick Communication</div>
+                        </div>
+                        <div class="skill-item freelance-item">
+                            <div class="skill-label">💰 Budget-Friendly</div>
+                        </div>
+                        <div class="skill-item freelance-item">
+                            <div class="skill-label">⏱️ On-Time Delivery</div>
+                        </div>
+                        <div class="skill-item freelance-item">
+                            <div class="skill-label">📱 Mobile-First Approach</div>
+                        </div>
+                        <div class="skill-item freelance-item">
+                            <div class="skill-label">🔧 Free 1-Month Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </section>
 
-    <!-- CONTACT -->
+    <!-- CONTACT SECTION -->
     <section class="contact" id="contact">
+        <div class="container">
+            <h2>📞 Let's Start Your Project!</h2>
+            <p class="contact-intro">🚀 Ready to build your website? Let's talk!</p>
 
-        <h2>Contact Me</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item contact-card">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:kanuparthicnu@gmail.com">kanuparthicnu@gmail.com</a></p>
+                        </div>
+                    </div>
 
-        <p>Email: yourmail@gmail.com</p>
-        <p>GitHub: github.com/yourgithub</p>
-        <p>LinkedIn: linkedin.com/in/yourprofile</p>
+                    <div class="contact-item contact-card">
+                        <i class="fab fa-whatsapp"></i>
+                        <div>
+                            <h4>WhatsApp</h4>
+                            <p><a href="https://wa.me/917981210743" target="_blank" rel="noopener noreferrer">+91-7981210743</a></p>
+                            <a href="https://wa.me/917981210743" target="_blank" rel="noopener noreferrer" class="whatsapp-btn">Click to Chat</a>
+                        </div>
+                    </div>
 
+                    <div class="contact-item contact-card">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Phone</h4>
+                            <p><a href="tel:+91-7981210743">+91-7981210743</a></p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item contact-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Location</h4>
+                            <p>Nellore, Andhra Pradesh</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-card">
+                    <form class="contact-form" id="contactForm">
+                        <p class="form-note">✅ I respond within 2 hours!</p>
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Your Email" required>
+                        <select name="projectType" required>
+                            <option value="">Project Type</option>
+                            <option>New Website</option>
+                            <option>Website Redesign</option>
+                            <option>Landing Page</option>
+                            <option>Other</option>
+                        </select>
+                        <select name="budget" required>
+                            <option value="">Budget Range</option>
+                            <option>₹5,000 - ₹10,000</option>
+                            <option>₹10,000 - ₹20,000</option>
+                            <option>₹20,000+</option>
+                            <option>Not sure, let's discuss</option>
+                        </select>
+                        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h3>❓ Frequently Asked Questions</h3>
+                <div class="faq-item">
+                    <strong>Q: How long does it take?</strong>
+                    <p>A: 3-7 days depending on package.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>Q: Do I need to pay upfront?</strong>
+                    <p>A: 50% advance, 50% on delivery.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>Q: Do you offer maintenance?</strong>
+                    <p>A: Yes, free for 1 month.</p>
+                </div>
+                <div class="faq-item">
+                    <strong>Q: Can I see my website while you build it?</strong>
+                    <p>A: Yes, you get a preview link.</p>
+                </div>
+            </div>
+        </div>
     </section>
+
+    <a href="https://wa.me/917981210743" target="_blank" rel="noopener noreferrer" class="floating-whatsapp">💬 Chat on WhatsApp</a>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <p>© 2026 Srinivasulu Kanuparthi | Freelance Web Developer | Built with ❤️</p>
+            <div class="footer-links">
+                <a href="https://www.linkedin.com/in/srinivasulu-kanuparthi" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                <a href="https://github.com/srinivasulu-kanuparthi" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> GitHub</a>
+                <a href="https://instagram.com/srinivasulu.kanuparthi" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">↑ Top</button>
+
+    <script src="data.js"></script>
+    <div class="project-modal" id="projectModal" aria-hidden="true">
+        <div class="project-modal-content">
+            <button class="project-modal-close" id="projectModalClose" aria-label="Close project details">×</button>
+            <h3 id="projectModalTitle">Project Details</h3>
+            <p id="projectModalDescription"></p>
+            <a id="projectModalLink" class="btn btn-primary project-modal-link" target="_blank" rel="noopener noreferrer" href="#">View on GitHub</a>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

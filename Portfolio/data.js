@@ -16,7 +16,7 @@ const portfolioData = {
         location: "Chennai, India",
         
         // SOCIAL LINKS
-        github: "https://github.com/yourgithub",
+        github: "https://github.com/Srinu3108",
         linkedin: "https://www.linkedin.com/in/srinivasulu-k-36b862270/",
         twitter: "https://twitter.com/yourhandle",
         
@@ -64,24 +64,17 @@ const portfolioData = {
     projects: [
         {
             name: "EnergyPulse",
-            description: "Smart Energy Monitoring System with real-time alerts, analytics dashboard, maintenance reports, and device monitoring.",
-            technologies: ["ASP.NET Core", "SQL Server", "React", "WebSockets"],
-            github: "#",
-            liveDemo: "#"
+            description: "Smart Energy Monitoring System with real-time alerts, comprehensive analytics dashboard, maintenance reports, and IoT device monitoring. Built for efficient energy management and cost optimization.",
+            technologies: ["ASP.NET Core", "React", "SQL Server", "WebSockets"],
+            github: "https://github.com/Srinu3108/PROJECTS",
+            liveDemo: "https://github.com/Srinu3108/PROJECTS"
         },
         {
-            name: "CodeJudge",
-            description: "Online coding assessment platform with challenges, automatic evaluation, and real-time leaderboard. Used by 500+ students.",
-            technologies: ["Blazor", "C#", "SQL Server", "Docker"],
-            github: "#",
-            liveDemo: "#"
-        },
-        {
-            name: "College Management System",
-            description: "Comprehensive Java OOP application for admissions, hostel management, placements, scholarships, and fee calculations.",
-            technologies: ["Java", "MySQL", "Swing", "OOP"],
-            github: "#",
-            liveDemo: "#"
+            name: "Farm Management System",
+            description: "Comprehensive Farm Management and Crop Monitoring system with real-time crop health tracking, weather forecasting integration, yield predictions, and automated irrigation management.",
+            technologies: ["Java", "Spring Boot", "MySQL", "Machine Learning"],
+            github: "https://github.com/Srinu3108/PROJECTS",
+            liveDemo: "https://github.com/Srinu3108/PROJECTS"
         }
     ],
 
@@ -126,14 +119,14 @@ const portfolioData = {
         {
             icon: "fas fa-graduation-cap",
             title: "Bachelor of Technology in Computer Science",
-            institution: "University Name - 2020",
-            details: "CGPA: 8.5/10 | Specialized in Web Development and Database Management"
+            institution: "Saveetha University - 2022",
+            details: "CGPA: 8.9/10 | Specialized in Web Development and Database Management"
         },
         {
             icon: "fas fa-certificate",
-            title: "Microsoft Certified: Azure Developer Associate",
-            institution: "Issued by Microsoft - 2023",
-            details: "Certified in cloud application development using Azure"
+            title: "Oracle Certified Associate: Java Programmer",
+            institution: "Oracle - Java SE 17",
+            details: "Certified in core Java programming, object-oriented concepts, and Java SE 17 fundamentals"
         },
         {
             icon: "fas fa-certificate",
