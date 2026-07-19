@@ -1,0 +1,294 @@
+@page "/report"
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<div style="
+    width: 100%;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    min-height: 100vh;
+">
+    <!-- STICKY HEADER -->
+    <div style="
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #0d1117;
+        border-bottom: 2px solid #238636;
+        padding: 16px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    ">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1 style="color: #2ecc71; margin: 0; font-size: 26px; font-weight: 700;">� Maintenance Report</h1>
+                <p style="color: #8b949e; margin: 3px 0 0 0; font-size: 12px;">Identify underperforming devices and prioritize maintenance work.</p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
+                <button @onclick="ExportReport" style="
+                    background: #1f6feb;
+                    color: white;
+                    padding: 8px 14px;
+                    border: none;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    font-weight: 500;
+                ">📥 Download CSV</button>
+                <button @onclick="ExportReportPDF" style="
+                    background: #d1250c;
+                    color: white;
+                    padding: 8px 14px;
+                    border: none;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    font-weight: 500;
+                ">📄 Download Text</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div style="padding: 20px;">
+        <div style="width: 100%; max-width: 1400px; margin: 0 auto;">
+
+            @if (isLoading)
+            {
+                <LoadingSpinner IsLoading="true" LoadingText="Loading report data..." />
+            }
+            else if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <ErrorDisplay ErrorMessage="@errorMessage" OnRetry="LoadReport" />
+            }
+            else if (report != null)
+            {
+                <!-- HERO METRIC: SYSTEM PERFORMANCE INDEX -->
+                <div style="
+                    background: linear-gradient(135deg, #1a4d2e 0%, #0d1117 100%);
+                    border: 2px solid #2ecc71;
+                    padding: 30px;
+                    border-radius: 12px;
+                    margin-bottom: 24px;
+                    text-align: center;
+                    box-shadow: 0 8px 24px rgba(46, 204, 113, 0.2);
+                ">
+                    <p style="color: #8b949e; margin: 0 0 12px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">System Performance Index</p>
+                    <div style="
+                        font-size: 64px;
+                        font-weight: bold;
+                        color: @(report.SystemPerformanceIndex >= 80 ? "#2ecc71" : report.SystemPerformanceIndex >= 60 ? "#f1c40f" : "#e74c3c");
+                        margin: 0;
+                        line-height: 1;
+                    ">@report.SystemPerformanceIndex%</div>
+                    <p style="color: @(report.SystemPerformanceIndex >= 80 ? "#2ecc71" : report.SystemPerformanceIndex >= 60 ? "#f1c40f" : "#e74c3c"); margin: 12px 0 0 0; font-size: 14px; font-weight: 600;">
+                        @(report.SystemPerformanceIndex >= 80 ? "✅ OPTIMAL - All systems performing well" : report.SystemPerformanceIndex >= 60 ? "⚠️ FAIR - Some devices need attention" : "❌ CRITICAL - Maintenance required immediately")
+                    </p>
+                </div>
+
+                <!-- KEY METRICS -->
+                <div style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 12px;
+                    margin-bottom: 24px;
+                ">
+                    <div style="background: #161b22; padding: 16px; border-radius: 10px; border: 1px solid #30363d; text-align: center;">
+                        <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 10px; text-transform: uppercase;">Total Devices</p>
+                        <p style="color: #58a6ff; margin: 0; font-size: 24px; font-weight: bold;">@report.TotalDevices</p>
+                    </div>
+                    <div style="background: #161b22; padding: 16px; border-radius: 10px; border: 1px solid #30363d; text-align: center;">
+                        <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 10px; text-transform: uppercase;">Active</p>
+                        <p style="color: #2ecc71; margin: 0; font-size: 24px; font-weight: bold;">@report.ActiveDevices</p>
+                    </div>
+                    <div style="background: #161b22; padding: 16px; border-radius: 10px; border: 1px solid #30363d; text-align: center;">
+                        <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 10px; text-transform: uppercase;">Offline</p>
+                        <p style="color: @(report.TotalDevices - report.ActiveDevices > 0 ? "#e74c3c" : "#2ecc71"); margin: 0; font-size: 24px; font-weight: bold;">@(report.TotalDevices - report.ActiveDevices)</p>
+                    </div>
+                    <div style="background: #161b22; padding: 16px; border-radius: 10px; border: 1px solid #30363d; text-align: center;">
+                        <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 10px; text-transform: uppercase;">High Alerts</p>
+                        <p style="color: @(report.HighAlerts > 0 ? "#e74c3c" : "#2ecc71"); margin: 0; font-size: 24px; font-weight: bold;">@report.HighAlerts</p>
+                    </div>
+                </div>
+
+                <!-- MAINTENANCE ISSUES -->
+                <div style="
+                    background: #161b22;
+                    border: 1px solid #30363d;
+                    padding: 24px;
+                    border-radius: 12px;
+                    margin-bottom: 24px;
+                ">
+                    <h3 style="color: #e74c3c; margin: 0 0 16px 0; font-size: 16px; font-weight: bold;">🔧 Devices Requiring Maintenance</h3>
+                    
+                    @if (report.TotalDevices - report.ActiveDevices > 0)
+                    {
+                        <div style="background: #2d0f0f; border: 1px solid #da3633; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                            <p style="color: #da3633; margin: 0; font-size: 13px;">
+                                ⚠️ <strong>Alert:</strong> @(report.TotalDevices - report.ActiveDevices) device(s) are offline. 
+                                These devices need immediate attention from your maintenance team.
+                            </p>
+                        </div>
+
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                            <tr style="background: #0d1117; border-bottom: 2px solid #30363d;">
+                                <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600;">Device</th>
+                                <th style="padding: 12px; text-align: center; color: #8b949e; font-weight: 600;">Status</th>
+                                <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600;">Issue</th>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #30363d;">
+                                <td style="padding: 12px; color: #e6edf3;">Inverter 1</td>
+                                <td style="padding: 12px; text-align: center; color: #e74c3c;">🔴 Offline</td>
+                                <td style="padding: 12px; color: #e6edf3;">No communication - check power &amp; network</td>
+                            </tr>
+                        </table>
+                    }
+                    else
+                    {
+                        <p style="color: #2ecc71; margin: 0; font-size: 13px;">✅ All devices are online and functioning normally.</p>
+                    }
+                </div>
+
+                <!-- TECHNICIAN RECOMMENDATIONS -->
+                <div style="
+                    background: #161b22;
+                    border: 1px solid #238636;
+                    padding: 24px;
+                    border-radius: 12px;
+                    background: rgba(46, 204, 113, 0.05);
+                ">
+                    <h3 style="color: #2ecc71; margin: 0 0 16px 0; font-size: 16px; font-weight: bold;">💡 Technician Field Guide</h3>
+                    <ol style="margin: 0; padding-left: 20px; color: #e6edf3; font-size: 13px; line-height: 1.8;">
+                        <li><strong>Check Communication:</strong> Verify network cables and power supply for offline devices</li>
+                        <li><strong>Restart Devices:</strong> Power cycle and wait 2-3 minutes for full boot</li>
+                        <li><strong>Verify Data:</strong> Confirm device readings resume after restart</li>
+                        <li><strong>Document Work:</strong> Record timestamp and any hardware issues found</li>
+                    </ol>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    ReportDto? report;
+    string errorMessage = "";
+    bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReport();
+    }
+
+    async Task LoadReport()
+    {
+        try
+        {
+            isLoading = true; 
+            errorMessage = "";
+            Console.WriteLine("📡 Fetching report...");
+            var response = await Http.GetAsync("api/report/summary/1");
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Report response: {content}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var options = new System.Text.Json.JsonSerializerOptions 
+                { 
+                    PropertyNameCaseInsensitive = true 
+                };
+                report = System.Text.Json.JsonSerializer.Deserialize<ReportDto>(content, options);
+                Console.WriteLine($"✅ Report loaded: {report?.Site}");
+            }
+            else
+            {
+                errorMessage = $"Error: {response.StatusCode}";
+                Console.WriteLine($"❌ Error: {response.StatusCode}");
+                report = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load report: {ex.Message}";
+            Console.WriteLine($"❌ Exception: {ex.Message}");
+            report = null;
+        }
+         finally
+        {
+            isLoading = false;  
+        }
+    }
+
+    async Task ExportReport()
+    {
+        if (report == null) return;
+        
+        var offlineCount = report.TotalDevices - report.ActiveDevices;
+        
+        System.Text.StringBuilder csv = new();
+        csv.AppendLine("EnergyPulse Maintenance Report");
+        csv.AppendLine($"Generated,{report.GeneratedAt:yyyy-MM-dd HH:mm:ss}");
+        csv.AppendLine($"Site Name,{report.Site}");
+        csv.AppendLine();
+        csv.AppendLine("SYSTEM PERFORMANCE");
+        csv.AppendLine("Metric,Value,Status");
+        csv.AppendLine($"Performance Index,{report.SystemPerformanceIndex}%,{(report.SystemPerformanceIndex >= 80 ? "OPTIMAL" : report.SystemPerformanceIndex >= 60 ? "FAIR" : "CRITICAL")}");
+        csv.AppendLine($"Total Devices,{report.TotalDevices},OK");
+        csv.AppendLine($"Active Devices,{report.ActiveDevices},OK");
+        csv.AppendLine($"Offline Devices,{offlineCount},{(offlineCount > 0 ? "NEEDS ATTENTION" : "OK")}");
+        csv.AppendLine($"High Priority Alerts,{report.HighAlerts},{(report.HighAlerts > 0 ? "CRITICAL" : "OK")}");
+        
+        var bytes = System.Text.Encoding.UTF8.GetBytes(csv.ToString());
+        var base64 = Convert.ToBase64String(bytes);
+        await JS.InvokeVoidAsync("downloadFile", $"maintenance-report-{DateTime.Now:yyyy-MM-dd-HHmm}.csv", base64);
+    }
+
+    async Task ExportReportPDF()
+    {
+        if (report == null) return;
+        
+        var offlineCount = report.TotalDevices - report.ActiveDevices;
+        var performanceStatus = report.SystemPerformanceIndex >= 80 ? "OPTIMAL" : report.SystemPerformanceIndex >= 60 ? "FAIR" : "CRITICAL";
+        
+        System.Text.StringBuilder sb = new();
+        sb.AppendLine("ENERGYPULSE MAINTENANCE REPORT");
+        sb.AppendLine("".PadRight(80, '='));
+        sb.AppendLine();
+        sb.AppendLine($"Generated: {report.GeneratedAt:yyyy-MM-dd HH:mm:ss}");
+        sb.AppendLine($"Site: {report.Site}");
+        sb.AppendLine($"Report ID: MR-{report.GeneratedAt:yyyyMMddHHmm}");
+        sb.AppendLine();
+        sb.AppendLine("SYSTEM PERFORMANCE OVERVIEW");
+        sb.AppendLine("".PadRight(40, '-'));
+        sb.AppendLine($"Performance Index: {report.SystemPerformanceIndex}% ({performanceStatus})");
+        sb.AppendLine($"Total Devices: {report.TotalDevices}");
+        sb.AppendLine($"Active Devices: {report.ActiveDevices}");
+        sb.AppendLine($"Offline Devices: {offlineCount}");
+        sb.AppendLine($"High Alerts: {report.HighAlerts}");
+        sb.AppendLine();
+        sb.AppendLine("".PadRight(80, '='));
+        sb.AppendLine($"Report generated: {DateTime.Now:dddd, MMMM d, yyyy} at {DateTime.Now:h:mm tt}");
+        sb.AppendLine("Share this report with your maintenance team immediately.");
+        
+        var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+        var base64 = Convert.ToBase64String(bytes);
+        await JS.InvokeVoidAsync("downloadFile", $"maintenance-report-{DateTime.Now:yyyy-MM-dd-HHmm}.txt", base64);
+    }
+
+    public class ReportDto
+    {
+        public string Site { get; set; } = "";
+        public int TotalDevices { get; set; }
+        public int ActiveDevices { get; set; }
+        public double SystemPerformanceIndex { get; set; }
+        public int HighAlerts { get; set; }
+        public DateTime GeneratedAt { get; set; }
+        public List<DeviceIssueDto> UnderperformingDevices { get; set; } = new();
+    }
+
+    public class DeviceIssueDto
+    {
+        public string DeviceName { get; set; } = "";
+        public string Status { get; set; } = "";
+        public double PerformanceIndex { get; set; }
+        public string Issue { get; set; } = "";
+    }
+}

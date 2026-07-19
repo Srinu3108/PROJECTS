@@ -1,0 +1,99 @@
+@page "/login"
+@using EnergyPulse.UI.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div style="
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:80vh;
+    padding:20px;
+    ">
+    <div style="
+        background:#161b22;
+        padding:40px;
+        border-radius:12px;
+        border:1px solid #30363d;
+        max-width:400px;
+        width:100%;
+        ">
+        <h2 style="color:#2ecc71;text-align:center;margin-bottom:24px;">🔐 Login</h2>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div style="
+                background:#2d0f0f;
+                border:1px solid #da3633;
+                padding:10px;
+                border-radius:6px;
+                color:#da3633;
+                margin-bottom:16px;
+                font-size:14px;
+                ">
+                @errorMessage
+            </div>
+        }
+
+        <div style="margin-bottom:16px;">
+            <label style="color:#8b949e;font-size:13px;display:block;margin-bottom:6px;">Username or Email</label>
+            <input @bind="username" style="
+            width:100%;
+            padding:10px;
+            background:#0d1117;
+            border:1px solid #30363d;
+            border-radius:6px;
+            color:#e6edf3;
+            " />
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <label style="color:#8b949e;font-size:13px;display:block;margin-bottom:6px;">Password</label>
+            <input @bind="password" type="password" style="
+            width:100%;
+            padding:10px;
+            background:#0d1117;
+            border:1px solid #30363d;
+            border-radius:6px;
+            color:#e6edf3;
+            " />
+        </div>
+
+        <button @onclick="HandleLogin" style="
+        width:100%;
+        padding:12px;
+        background:#238636;
+        color:white;
+        border:none;
+        border-radius:6px;
+        font-size:16px;
+        font-weight:600;
+        cursor:pointer;
+        ">Login</button>
+
+        <p style="text-align:center;color:#8b949e;margin-top:16px;font-size:13px;">
+            Don't have an account? <a href="/register" style="color:#58a6ff;text-decoration:none;">Register</a>
+        </p>
+    </div>
+</div>
+
+@code {
+    private string username = "";
+    private string password = "";
+    private string errorMessage = "";
+
+    private async Task HandleLogin()
+    {
+        errorMessage = "";
+        var success = await AuthService.Login(username, password);
+        if (success)
+        {
+            // 🔥 Force a full page reload to refresh auth state
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+        else
+        {
+            errorMessage = "Invalid username or password.";
+        }
+    }
+}
