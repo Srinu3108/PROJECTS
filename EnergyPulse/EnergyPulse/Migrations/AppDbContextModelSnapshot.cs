@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EnergyPulse.Migrations
+namespace EnergyPulse.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -29,21 +29,40 @@ namespace EnergyPulse.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AlertType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DeviceId")
                         .HasColumnType("int");
 
+                    b.Property<double?>("EstimatedCost")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("ImpactKW")
+                        .HasColumnType("float");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Severity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DeviceId");
 
                     b.ToTable("Alerts");
                 });
@@ -55,6 +74,25 @@ namespace EnergyPulse.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Capacity")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CurrentEfficiency")
+                        .HasColumnType("float");
+
+                    b.Property<string>("DeviceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("InstalledDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastMaintenanceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastReadingDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -72,6 +110,66 @@ namespace EnergyPulse.Migrations
                     b.HasIndex("SiteId");
 
                     b.ToTable("Devices");
+                });
+
+            modelBuilder.Entity("EnergyPulse.Models.MaintenanceRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double?>("ActualCost")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("AlertId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("EstimatedCost")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReportDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlertId");
+
+                    b.HasIndex("DeviceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MaintenanceRecords");
                 });
 
             modelBuilder.Entity("EnergyPulse.Models.PowerReading", b =>
@@ -109,6 +207,12 @@ namespace EnergyPulse.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EstablishedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -117,12 +221,73 @@ namespace EnergyPulse.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("PerformanceTarget")
+                        .HasColumnType("float");
+
                     b.Property<double>("TotalCapacityKW")
                         .HasColumnType("float");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Sites");
+                });
+
+            modelBuilder.Entity("EnergyPulse.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SiteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SiteId");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("EnergyPulse.Models.Alert", b =>
+                {
+                    b.HasOne("EnergyPulse.Models.Device", "Device")
+                        .WithMany("Alerts")
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
                 });
 
             modelBuilder.Entity("EnergyPulse.Models.Device", b =>
@@ -136,6 +301,30 @@ namespace EnergyPulse.Migrations
                     b.Navigation("Site");
                 });
 
+            modelBuilder.Entity("EnergyPulse.Models.MaintenanceRecord", b =>
+                {
+                    b.HasOne("EnergyPulse.Models.Alert", "RelatedAlert")
+                        .WithMany()
+                        .HasForeignKey("AlertId");
+
+                    b.HasOne("EnergyPulse.Models.Device", "Device")
+                        .WithMany("MaintenanceRecords")
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EnergyPulse.Models.User", "TechnicianAssigned")
+                        .WithMany("CreatedReports")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Device");
+
+                    b.Navigation("RelatedAlert");
+
+                    b.Navigation("TechnicianAssigned");
+                });
+
             modelBuilder.Entity("EnergyPulse.Models.PowerReading", b =>
                 {
                     b.HasOne("EnergyPulse.Models.Device", "Device")
@@ -147,14 +336,35 @@ namespace EnergyPulse.Migrations
                     b.Navigation("Device");
                 });
 
+            modelBuilder.Entity("EnergyPulse.Models.User", b =>
+                {
+                    b.HasOne("EnergyPulse.Models.Site", "Site")
+                        .WithMany("Users")
+                        .HasForeignKey("SiteId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Site");
+                });
+
             modelBuilder.Entity("EnergyPulse.Models.Device", b =>
                 {
+                    b.Navigation("Alerts");
+
+                    b.Navigation("MaintenanceRecords");
+
                     b.Navigation("Readings");
                 });
 
             modelBuilder.Entity("EnergyPulse.Models.Site", b =>
                 {
                     b.Navigation("Devices");
+
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("EnergyPulse.Models.User", b =>
+                {
+                    b.Navigation("CreatedReports");
                 });
 #pragma warning restore 612, 618
         }

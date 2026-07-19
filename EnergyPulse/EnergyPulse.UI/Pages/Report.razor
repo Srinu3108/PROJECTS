@@ -51,21 +51,15 @@
     <div style="padding: 20px;">
         <div style="width: 100%; max-width: 1400px; margin: 0 auto;">
 
-            @if (report == null)
+            @if (isLoading)
             {
-                <div style="
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 80px 20px;
-                    background: #161b22;
-                    border-radius: 12px;
-                    border: 1px solid #30363d;
-                ">
-                    <p style="color: #8b949e; font-size: 16px; margin: 0;">⏳ Loading report...</p>
-                </div>
+                <LoadingSpinner IsLoading="true" LoadingText="Loading report data..." />
             }
-            else
+            else if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <ErrorDisplay ErrorMessage="@errorMessage" OnRetry="LoadReport" />
+            }
+            else if (report != null)
             {
                 <!-- HERO METRIC: SYSTEM PERFORMANCE INDEX -->
                 <div style="
@@ -176,14 +170,51 @@
 
 @code {
     ReportDto? report;
+    string errorMessage = "";
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadReport();
+    }
+
+    async Task LoadReport()
+    {
         try
         {
-            report = await Http.GetFromJsonAsync<ReportDto>("api/report");
+            isLoading = true; 
+            errorMessage = "";
+            Console.WriteLine("📡 Fetching report...");
+            var response = await Http.GetAsync("api/report/summary/1");
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Report response: {content}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var options = new System.Text.Json.JsonSerializerOptions 
+                { 
+                    PropertyNameCaseInsensitive = true 
+                };
+                report = System.Text.Json.JsonSerializer.Deserialize<ReportDto>(content, options);
+                Console.WriteLine($"✅ Report loaded: {report?.Site}");
+            }
+            else
+            {
+                errorMessage = $"Error: {response.StatusCode}";
+                Console.WriteLine($"❌ Error: {response.StatusCode}");
+                report = null;
+            }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load report: {ex.Message}";
+            Console.WriteLine($"❌ Exception: {ex.Message}");
+            report = null;
+        }
+         finally
+        {
+            isLoading = false;  
+        }
     }
 
     async Task ExportReport()
@@ -204,12 +235,6 @@
         csv.AppendLine($"Active Devices,{report.ActiveDevices},OK");
         csv.AppendLine($"Offline Devices,{offlineCount},{(offlineCount > 0 ? "NEEDS ATTENTION" : "OK")}");
         csv.AppendLine($"High Priority Alerts,{report.HighAlerts},{(report.HighAlerts > 0 ? "CRITICAL" : "OK")}");
-        csv.AppendLine();
-        csv.AppendLine("MAINTENANCE REQUIREMENTS");
-        csv.AppendLine("Device,Issue Type,Priority,Recommended Action");
-        csv.AppendLine("Inverter 1,Offline - No Communication,CRITICAL,Check power supply and network");
-        csv.AppendLine("Inverter 6,No Recent Data,HIGH,Verify device status and connectivity");
-        csv.AppendLine("Inverter 3,No Recent Data,HIGH,Verify device status and connectivity");
         
         var bytes = System.Text.Encoding.UTF8.GetBytes(csv.ToString());
         var base64 = Convert.ToBase64String(bytes);
@@ -239,48 +264,6 @@
         sb.AppendLine($"Offline Devices: {offlineCount}");
         sb.AppendLine($"High Alerts: {report.HighAlerts}");
         sb.AppendLine();
-        sb.AppendLine("DEVICES REQUIRING MAINTENANCE");
-        sb.AppendLine("".PadRight(40, '-'));
-        sb.AppendLine();
-        sb.AppendLine("PRIORITY: CRITICAL");
-        sb.AppendLine("  Device: Inverter 1");
-        sb.AppendLine("  Status: Offline");
-        sb.AppendLine("  Issue: No communication - device appears powered off or disconnected");
-        sb.AppendLine("  Action: Verify power supply, check network connection, restart device if needed");
-        sb.AppendLine("  Timeline: Address within 12 hours");
-        sb.AppendLine();
-        sb.AppendLine("PRIORITY: HIGH");
-        sb.AppendLine("  Device: Inverter 6");
-        sb.AppendLine("  Status: Offline");
-        sb.AppendLine("  Issue: No recent data readings from sensor");
-        sb.AppendLine("  Action: Check device connectivity, verify sensor functionality");
-        sb.AppendLine("  Timeline: Address within 24 hours");
-        sb.AppendLine();
-        sb.AppendLine("PRIORITY: HIGH");
-        sb.AppendLine("  Device: Inverter 3");
-        sb.AppendLine("  Status: Offline");
-        sb.AppendLine("  Issue: No recent data readings from sensor");
-        sb.AppendLine("  Action: Check device connectivity, verify sensor functionality");
-        sb.AppendLine("  Timeline: Address within 24 hours");
-        sb.AppendLine();
-        sb.AppendLine("TECHNICIAN FIELD GUIDE");
-        sb.AppendLine("".PadRight(40, '-'));
-        sb.AppendLine();
-        sb.AppendLine("Step 1: Check power and connectivity for offline devices");
-        sb.AppendLine("  - Verify power supply (AC/DC) is connected");
-        sb.AppendLine("  - Check network cables for damage");
-        sb.AppendLine("  - Verify network switches and access points are functioning");
-        sb.AppendLine();
-        sb.AppendLine("Step 2: Restart and re-commission devices");
-        sb.AppendLine("  - Power cycle the device");
-        sb.AppendLine("  - Wait 2-3 minutes for full boot");
-        sb.AppendLine("  - Verify data readings resume");
-        sb.AppendLine();
-        sb.AppendLine("Step 3: Document repairs for compliance");
-        sb.AppendLine("  - Record timestamp of repair");
-        sb.AppendLine("  - Note any hardware issues found");
-        sb.AppendLine("  - Update device inventory database");
-        sb.AppendLine();
         sb.AppendLine("".PadRight(80, '='));
         sb.AppendLine($"Report generated: {DateTime.Now:dddd, MMMM d, yyyy} at {DateTime.Now:h:mm tt}");
         sb.AppendLine("Share this report with your maintenance team immediately.");
@@ -298,5 +281,14 @@
         public double SystemPerformanceIndex { get; set; }
         public int HighAlerts { get; set; }
         public DateTime GeneratedAt { get; set; }
+        public List<DeviceIssueDto> UnderperformingDevices { get; set; } = new();
+    }
+
+    public class DeviceIssueDto
+    {
+        public string DeviceName { get; set; } = "";
+        public string Status { get; set; } = "";
+        public double PerformanceIndex { get; set; }
+        public string Issue { get; set; } = "";
     }
 }

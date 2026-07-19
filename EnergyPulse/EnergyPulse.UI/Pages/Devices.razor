@@ -6,7 +6,7 @@
     width: 100%;
     background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
     min-height: 100vh;
-">
+    ">
     <!-- STICKY HEADER -->
     <div style="
         position: sticky;
@@ -16,14 +16,16 @@
         border-bottom: 2px solid #238636;
         padding: 16px 20px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    ">
-        <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        ">
+        <div
+            style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
             <div>
                 <h1 style="color: #2ecc71; margin: 0; font-size: 26px; font-weight: 700;">⚙️ Devices</h1>
-                <p style="color: #8b949e; margin: 3px 0 0 0; font-size: 12px;">Manage @(devices?.Count ?? 0) energy devices</p>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <input @bind="searchText" placeholder="Search devices..." style="
+                <p style="color: #8b949e; margin: 3px 0 0 0; font-size: 12px;">Manage @(devices?.Count ?? 0) energy
+                    devices</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <input @bind="searchText" placeholder="Search devices..." style="
                     background: #161b22;
                     color: #e6edf3;
                     border: 1px solid #30363d;
@@ -31,8 +33,8 @@
                     border-radius: 6px;
                     font-size: 12px;
                     width: 150px;
-                " />
-                <button style="
+                    " />
+                    <button style="
                     background: #238636;
                     color: white;
                     padding: 8px 14px;
@@ -41,8 +43,8 @@
                     font-size: 12px;
                     cursor: pointer;
                     font-weight: 500;
-                ">🔍 Filter</button>
-                <button @onclick="ExportDevices" style="
+                    ">🔍 Filter</button>
+                    <button @onclick="ExportDevices" style="
                     background: #1f6feb;
                     color: white;
                     padding: 8px 14px;
@@ -51,161 +53,232 @@
                     font-size: 12px;
                     cursor: pointer;
                     font-weight: 500;
-                ">📥 Export</button>
+                    ">📥 Export</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div style="padding: 20px;">
+            <div style="width: 100%; max-width: 1400px; margin: 0 auto;">
+                @if (isLoading)
+                {
+                    <LoadingSpinner IsLoading="true" LoadingText="Loading devices..." />
+                }
+                else if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <ErrorDisplay ErrorMessage="@errorMessage" OnRetry="LoadDevices" />
+                }
+                else if (devices != null && devices.Count == 0)
+                {
+                    <div style="
+                        padding: 40px;
+                        background: #161b22;
+                        border-radius: 12px;
+                        border: 1px solid #30363d;
+                        text-align: center;
+                        ">
+                        <p style="color: #8b949e; font-size: 14px; margin: 0;">No devices found</p>
+                    </div>
+                }
+                else if (devices != null && devices.Count > 0)
+                {
+                    <!-- STATS -->
+                    <div style="
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                        gap: 12px;
+                        margin-bottom: 20px;
+                        ">
+                        <div style="
+                            background: #161b22;
+                            padding: 14px;
+                            border-radius: 10px;
+                            border: 1px solid #30363d;
+                            text-align: center;
+                            ">
+                            <p style="color: #8b949e; margin: 0 0 6px 0; font-size: 10px; text-transform: uppercase;">Total</p>
+                            <p style="color: #58a6ff; margin: 0; font-size: 24px; font-weight: bold;">@devices.Count</p>
+                        </div>
+                        <div style="
+                            background: #161b22;
+                            padding: 14px;
+                            border-radius: 10px;
+                            border: 1px solid #30363d;
+                            text-align: center;
+                            ">
+                            <p style="color: #8b949e; margin: 0 0 6px 0; font-size: 10px; text-transform: uppercase;">Active</p>
+                            <p style="color: #2ecc71; margin: 0; font-size: 24px; font-weight: bold;">@CountByStatus("Active")
+                            </p>
+                        </div>
+                        <div style="
+                            background: #161b22;
+                            padding: 14px;
+                            border-radius: 10px;
+                            border: 1px solid #30363d;
+                            text-align: center;
+                            ">
+                            <p style="color: #8b949e; margin: 0 0 6px 0; font-size: 10px; text-transform: uppercase;">Offline
+                            </p>
+                            <p style="color: #e74c3c; margin: 0; font-size: 24px; font-weight: bold;">@CountOffline()</p>
+                        </div>
+                        <div style="
+                            background: #161b22;
+                            padding: 14px;
+                            border-radius: 10px;
+                            border: 1px solid #30363d;
+                            text-align: center;
+                            ">
+                            <p style="color: #8b949e; margin: 0 0 6px 0; font-size: 10px; text-transform: uppercase;">Health</p>
+                            <p
+                                style="color: @(CountOffline() > 0 ? "#e74c3c" : "#2ecc71"); margin: 0; font-size: 24px; font-weight: bold;">
+                                @(CountOffline() > 0 ? "⚠️" : "✅")
+                            </p>
+                        </div>
+                    </div>
+
+                                
+                    <!-- DEVICES TABLE -->
+                    <div style="
+                        background: #161b22;
+                        border-radius: 12px;
+                        border: 1px solid #30363d;
+                        overflow: hidden;
+                        ">
+                        <table style="
+                            width: 100%;
+                            border-collapse: collapse;
+                            color: #e6edf3;
+                            font-size: 13px;
+                            ">
+                            <thead>
+                                <tr style="background: #0d1117; border-bottom: 2px solid #30363d;">
+                                    <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600;">ID</th>
+                                    <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600;">Name</th>
+                                    <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600;">Type</th>
+                                    <th style="padding: 12px; text-align: center; color: #8b949e; font-weight: 600;">Status</th>
+                                    <th style="padding: 12px; text-align: center; color: #8b949e; font-weight: 600;">Efficiency
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var device in devices.Where(d => d.Name.ToLower().Contains(searchText.ToLower())))
+                                {
+                                    var isActive = IsActive(device);
+                                    var isOffline = IsOffline(device);
+
+                                    <tr
+                                        style="border-bottom: 1px solid #30363d; background: @(isActive ? "transparent" : "rgba(218, 54, 51, 0.05)");">
+                                        <td style="padding: 12px; color: #58a6ff; font-weight: 600;">#@device.Id</td>
+                                        <td style="padding: 12px;">@device.Name</td>
+                                        <td style="padding: 12px;">@(device.Type ?? "N/A")</td>
+                                        <td style="padding: 12px; text-align: center;">
+                                            <span style="
+                                                display: inline-block;
+                                                padding: 4px 10px;
+                                                border-radius: 4px;
+                                                font-size: 11px;
+                                                font-weight: 600;
+                                                background: @(isActive ? "#238636" : "#da3633");
+                                                color: white;
+                                                ">
+                                                @(isActive ? "🟢 ACTIVE" : isOffline ? "🔴 OFFLINE" : "⚪ " +
+                            device.Status.ToUpper())
+                                            </span>
+                                        </td>
+                                        <td style="padding: 12px; text-align: center;">
+                                            <span style="color: @GetEfficiencyColor(device.Efficiency);">@device.Efficiency%</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
     </div>
 
-    <!-- CONTENT -->
-    <div style="padding: 20px;">
-        <div style="width: 100%; max-width: 1400px; margin: 0 auto;">
-
-            @if (devices == null)
-            {
-                <div style="
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 80px 20px;
-                    background: #161b22;
-                    border-radius: 12px;
-                    border: 1px solid #30363d;
-                ">
-                    <p style="color: #8b949e; font-size: 16px; margin: 0;">⏳ Loading devices...</p>
-                </div>
-            }
-            else if (devices.Count == 0)
-            {
-                <div style="
-                    padding: 40px;
-                    background: #161b22;
-                    border-radius: 12px;
-                    border: 1px solid #30363d;
-                    text-align: center;
-                ">
-                    <p style="color: #8b949e; font-size: 14px; margin: 0;">No devices found</p>
-                </div>
-            }
-            else
-            {
-                <!-- STATS -->
-                <div style="
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                    gap: 12px;
-                    margin-bottom: 20px;
-                ">
-                    <div style="
-                        background: #161b22;
-                        padding: 14px;
-                        border-radius: 10px;
-                        border: 1px solid #30363d;
-                        text-align: center;
-                    ">
-                        <p style="color: #8b949e; margin: 0 0 6px 0; font-size: 10px; text-transform: uppercase;">Total</p>
-                        <p style="color: #58a6ff; margin: 0; font-size: 24px; font-weight: bold;">@devices.Count</p>
-                    </div>
-                    <div style="
-                        background: #161b22;
-                        padding: 14px;
-                        border-radius: 10px;
-                        border: 1px solid #30363d;
-                        text-align: center;
-                    ">
-                        <p style="color: #8b949e; margin: 0 0 6px 0; font-size: 10px; text-transform: uppercase;">Active</p>
-                        <p style="color: #2ecc71; margin: 0; font-size: 24px; font-weight: bold;">@devices.Count(d => d.status == "Active")</p>
-                    </div>
-                    <div style="
-                        background: #161b22;
-                        padding: 14px;
-                        border-radius: 10px;
-                        border: 1px solid #30363d;
-                        text-align: center;
-                    ">
-                        <p style="color: #8b949e; margin: 0 0 6px 0; font-size: 10px; text-transform: uppercase;">Offline</p>
-                        <p style="color: #e74c3c; margin: 0; font-size: 24px; font-weight: bold;">@devices.Count(d => d.status == "Offline")</p>
-                    </div>
-                    <div style="
-                        background: #161b22;
-                        padding: 14px;
-                        border-radius: 10px;
-                        border: 1px solid #30363d;
-                        text-align: center;
-                    ">
-                        <p style="color: #8b949e; margin: 0 0 6px 0; font-size: 10px; text-transform: uppercase;">Health</p>
-                        <p style="color: #2ecc71; margin: 0; font-size: 24px; font-weight: bold;">✅</p>
-                    </div>
-                </div>
-
-                <!-- DEVICES TABLE -->
-                <div style="
-                    background: #161b22;
-                    border-radius: 12px;
-                    border: 1px solid #30363d;
-                    overflow: hidden;
-                ">
-                    <table style="
-                        width: 100%;
-                        border-collapse: collapse;
-                        color: #e6edf3;
-                        font-size: 13px;
-                    ">
-                        <thead>
-                            <tr style="background: #0d1117; border-bottom: 2px solid #30363d;">
-                                <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600;">ID</th>
-                                <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600;">Name</th>
-                                <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600;">Type</th>
-                                <th style="padding: 12px; text-align: center; color: #8b949e; font-weight: 600;">Status</th>
-                                <th style="padding: 12px; text-align: center; color: #8b949e; font-weight: 600;">Efficiency</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var device in devices.Where(d => d.name.ToLower().Contains(searchText.ToLower())))
-                            {
-                                <tr style="border-bottom: 1px solid #30363d; background: @(device.status == "Active" ? "transparent" : "rgba(218, 54, 51, 0.05)");">
-                                    <td style="padding: 12px; color: #58a6ff; font-weight: 600;">#@device.id</td>
-                                    <td style="padding: 12px;">@device.name</td>
-                                    <td style="padding: 12px;">@(device.type ?? "N/A")</td>
-                                    <td style="padding: 12px; text-align: center;">
-                                        <span style="
-                                            display: inline-block;
-                                            padding: 4px 10px;
-                                            border-radius: 4px;
-                                            font-size: 11px;
-                                            font-weight: 600;
-                                            background: @(device.status == "Active" ? "#238636" : "#da3633");
-                                            color: white;
-                                        ">
-                                            @(device.status == "Active" ? "🟢 ACTIVE" : "🔴 OFFLINE")
-                                        </span>
-                                    </td>
-                                    <td style="padding: 12px; text-align: center;">
-                                        <span style="color: @GetEfficiencyColor(device.efficiency);">@device.efficiency%</span>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
 @code {
     List<DeviceDto>? devices;
     string searchText = "";
+    string errorMessage = "";
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadDevices();
+    }
+
+    async Task LoadDevices()
+    {
         try
         {
-            devices = await Http.GetFromJsonAsync<List<DeviceDto>>("api/device") ?? new List<DeviceDto>();
+            isLoading = true;
+            errorMessage = "";
+            Console.WriteLine("📡 Fetching devices...");
+
+            var response = await Http.GetAsync("api/device");
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"📡 Devices response: {content}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                devices = System.Text.Json.JsonSerializer.Deserialize<List<DeviceDto>>(content, options) ?? new List<DeviceDto>();
+
+                // ✅ Debug: Log status values
+                foreach (var d in devices)
+                {
+                    Console.WriteLine($"Device: {d.Name}, Status: '{d.Status}'");
+                }
+
+                Console.WriteLine($"✅ Loaded {devices.Count} devices");
+            }
+            else
+            {
+                errorMessage = $"Error: {response.StatusCode}";
+                Console.WriteLine($"❌ Error: {response.StatusCode}");
+                devices = new List<DeviceDto>();
+            }
         }
-        catch
+        catch (Exception ex)
         {
+            errorMessage = $"Exception: {ex.Message}";
+            Console.WriteLine($"❌ Exception: {ex.Message}");
             devices = new List<DeviceDto>();
         }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // Helper methods for case-insensitive status counting
+    int CountByStatus(string status)
+    {
+        return devices?.Count(d => string.Equals(d.Status, status, StringComparison.OrdinalIgnoreCase)) ?? 0;
+    }
+
+    int CountOffline()
+    {
+        return devices?.Count(d =>
+            string.Equals(d.Status, "Offline", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(d.Status, "Fault", StringComparison.OrdinalIgnoreCase)) ?? 0;
+    }
+
+    bool IsActive(DeviceDto device)
+    {
+        return string.Equals(device.Status, "Active", StringComparison.OrdinalIgnoreCase);
+    }
+
+    bool IsOffline(DeviceDto device)
+    {
+        return string.Equals(device.Status, "Offline", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(device.Status, "Fault", StringComparison.OrdinalIgnoreCase);
     }
 
     async Task ExportDevices()
@@ -213,7 +286,7 @@
         var content = "Device Export\n=============\n";
         foreach (var d in devices ?? new())
         {
-            content += $"{d.name} - {d.status} - {d.efficiency}%\n";
+            content += $"{d.Name} - {d.Status} - {d.Efficiency}%\n";
         }
         var bytes = System.Text.Encoding.UTF8.GetBytes(content);
         var base64 = Convert.ToBase64String(bytes);
@@ -227,10 +300,10 @@
 
     public class DeviceDto
     {
-        public int id { get; set; }
-        public string name { get; set; } = "";
-        public string status { get; set; } = "";
-        public int efficiency { get; set; }
-        public string? type { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Status { get; set; } = "";
+        public int Efficiency { get; set; }
+        public string Type { get; set; } = "";
     }
 }

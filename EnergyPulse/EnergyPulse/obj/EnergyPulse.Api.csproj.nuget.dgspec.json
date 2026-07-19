@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kanup\\source\\repos\\EnergyPulse\\EnergyPulse\\EnergyPulse.Api.csproj": {}
+    "C:\\Users\\kanup\\source\\repos\\PROJECTS\\EnergyPulse\\EnergyPulse\\EnergyPulse.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kanup\\source\\repos\\EnergyPulse\\EnergyPulse\\EnergyPulse.Api.csproj": {
+    "C:\\Users\\kanup\\source\\repos\\PROJECTS\\EnergyPulse\\EnergyPulse\\EnergyPulse.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kanup\\source\\repos\\EnergyPulse\\EnergyPulse\\EnergyPulse.Api.csproj",
+        "projectUniqueName": "C:\\Users\\kanup\\source\\repos\\PROJECTS\\EnergyPulse\\EnergyPulse\\EnergyPulse.Api.csproj",
         "projectName": "EnergyPulse.Api",
-        "projectPath": "C:\\Users\\kanup\\source\\repos\\EnergyPulse\\EnergyPulse\\EnergyPulse.Api.csproj",
+        "projectPath": "C:\\Users\\kanup\\source\\repos\\PROJECTS\\EnergyPulse\\EnergyPulse\\EnergyPulse.Api.csproj",
         "packagesPath": "C:\\Users\\kanup\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kanup\\source\\repos\\EnergyPulse\\EnergyPulse\\obj\\",
+        "outputPath": "C:\\Users\\kanup\\source\\repos\\PROJECTS\\EnergyPulse\\EnergyPulse\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -51,6 +51,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.2.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -65,9 +73,21 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[10.1.7, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.19.1, )"
+            },
+            "itext7": {
+              "target": "Package",
+              "version": "[7.2.5, )"
             }
           },
           "imports": [
@@ -81,6 +101,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"

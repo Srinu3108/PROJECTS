@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "m1wRebNpK7A=",
+  "dgSpecHash": "zj7FaI9vvU8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\kanup\\source\\repos\\EnergyPulse\\EnergyPulse.UI\\EnergyPulse.UI.csproj",
+  "projectFilePath": "C:\\Users\\kanup\\source\\repos\\PROJECTS\\EnergyPulse\\EnergyPulse.UI\\EnergyPulse.UI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kanup\\.nuget\\packages\\blazorise\\2.0.4\\blazorise.2.0.4.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\blazorise.bootstrap\\2.0.4\\blazorise.bootstrap.2.0.4.nupkg.sha512",
@@ -13,9 +13,11 @@
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.25\\microsoft.aspnetcore.authorization.8.0.25.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.25\\microsoft.aspnetcore.components.8.0.25.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.components.analyzers\\8.0.25\\microsoft.aspnetcore.components.analyzers.8.0.25.nupkg.sha512",
+    "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.components.authorization\\8.0.0\\microsoft.aspnetcore.components.authorization.8.0.0.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.components.forms\\8.0.25\\microsoft.aspnetcore.components.forms.8.0.25.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.components.web\\8.0.25\\microsoft.aspnetcore.components.web.8.0.25.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly\\8.0.25\\microsoft.aspnetcore.components.webassembly.8.0.25.nupkg.sha512",
+    "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly.authentication\\8.0.0\\microsoft.aspnetcore.components.webassembly.authentication.8.0.0.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly.devserver\\8.0.25\\microsoft.aspnetcore.components.webassembly.devserver.8.0.25.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.metadata\\8.0.25\\microsoft.aspnetcore.metadata.8.0.25.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.extensions.configuration\\8.0.0\\microsoft.extensions.configuration.8.0.0.nupkg.sha512",
@@ -37,7 +39,10 @@
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.25\\microsoft.net.illink.tasks.8.0.25.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\10.0.5\\microsoft.net.sdk.webassembly.pack.10.0.5.nupkg.sha512",
     "C:\\Users\\kanup\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
-    "C:\\Users\\kanup\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.25\\microsoft.netcore.app.runtime.mono.browser-wasm.8.0.25.nupkg.sha512"
+    "C:\\Users\\kanup\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.25\\microsoft.aspnetcore.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\kanup\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.25\\microsoft.netcore.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\kanup\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.25\\microsoft.netcore.app.runtime.mono.browser-wasm.8.0.25.nupkg.sha512",
+    "C:\\Users\\kanup\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.25\\microsoft.windowsdesktop.app.ref.8.0.25.nupkg.sha512"
   ],
   "logs": []
 }
