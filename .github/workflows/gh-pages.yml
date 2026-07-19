@@ -17,12 +17,12 @@ jobs:
     
     - name: Publish
       run: |
-        cd EnergyPulse.UI
+        cd EnergyPulse/EnergyPulse.UI
         dotnet publish -c Release -p:GHPages=true -o publish
     
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: EnergyPulse.UI/publish/wwwroot
+        publish_dir: EnergyPulse/EnergyPulse.UI/publish/wwwroot
         publish_branch: gh-pages
