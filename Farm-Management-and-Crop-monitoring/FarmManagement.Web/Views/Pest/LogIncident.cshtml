@@ -1,0 +1,77 @@
+@model FarmManagement.Web.Models.Entities.PestIncident
+
+@{
+    ViewData["Title"] = "Log Pest Incident";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fee2e2;color:#dc2626;">
+                <i class="bi bi-bug"></i>
+            </span>
+            Log Pest Incident
+        </h1>
+        <p>Report a new pest or disease incident for a crop.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="fm-card" style="max-width:720px;">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-bug" style="color:#dc2626;"></i> Incident Details</span>
+    </div>
+    <div class="fm-card-body fm-form">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="fm-alert fm-alert-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="PestName" class="form-label">Pest Name</label>
+                    <input asp-for="PestName" class="form-control"
+                           placeholder="e.g. Aphids, Brown Plant Hopper" />
+                    <span asp-validation-for="PestName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CropId" class="form-label">Affected Crop</label>
+                    <select asp-for="CropId" class="form-select">
+                        <option value="">-- Select Crop --</option>
+                        @if (ViewBag.Crops != null)
+                        {
+                            @foreach (var crop in ViewBag.Crops)
+                            {
+                                <option value="@crop.CropId">@crop.CropName</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="CropId" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"
+                              placeholder="Describe the pest incident in detail..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="fm-alert fm-alert-warning mt-3">
+                <i class="bi bi-info-circle"></i>
+                <span>Incident will be logged with today's date and marked as <strong>Active</strong> automatically.</span>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn-fm btn-danger-fm">
+                    <i class="bi bi-exclamation-triangle"></i> Log Incident
+                </button>
+                <a asp-action="Index" class="btn-fm btn-ghost-fm">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

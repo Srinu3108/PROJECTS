@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "EnergyPulse\\EnergyPulse.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "EnergyPulse.UI\\EnergyPulse.UI.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

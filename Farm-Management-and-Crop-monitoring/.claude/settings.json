@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat /c/Users/2483402/source/repos/FarmManagementSystem/FarmManagement.PestResourceService/Controllers/*.cs)",
+      "Bash(taskkill /PID 23532 /F)",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":49291 \")",
+      "Bash(findstr \":49293 \")",
+      "Bash(cmd /c \"taskkill /PID 23532 /F\")"
+    ]
+  }
+}

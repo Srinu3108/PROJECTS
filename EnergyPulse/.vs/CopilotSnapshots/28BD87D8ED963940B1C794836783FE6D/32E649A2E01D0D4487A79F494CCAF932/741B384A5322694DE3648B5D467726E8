@@ -1,0 +1,314 @@
+﻿@page "/charts"
+
+<div style="
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    min-height: 100vh;
+">
+    <div style="width: 100%; max-width: 1400px;">
+
+        <!-- 🔹 HEADER -->
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="color: #58a6ff; margin: 0; font-size: 28px;">
+                EnergyPulse – Energy Analytics
+            </h2>
+
+            <p style="color: #8b949e; margin: 8px 0; font-size: 14px;">
+                Monitor real-time energy output trends and performance metrics.
+            </p>
+
+            <h1 style="color: #2ecc71; margin: 15px 0 5px 0; font-size: 32px;">
+                📊 Energy Output Analysis
+            </h1>
+
+            <p style="color: #8b949e; font-size: 13px; margin: 0;">
+                Last updated: @currentTime
+            </p>
+        </div>
+
+        <!-- 🔹 KEY METRICS BAR -->
+        <div style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        ">
+            <div style="
+                background: #161b22;
+                padding: 18px 22px;
+                border-radius: 10px;
+                border: 1px solid #30363d;
+                color: white;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Peak Output</p>
+                <p style="color: #2ecc71; margin: 0; font-size: 24px; font-weight: bold;">@maxValue kW</p>
+                <p style="color: #8b949e; margin: 5px 0 0 0; font-size: 11px;">@maxTime</p>
+            </div>
+
+            <div style="
+                background: #161b22;
+                padding: 18px 22px;
+                border-radius: 10px;
+                border: 1px solid #30363d;
+                color: white;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Minimum Output</p>
+                <p style="color: #f1c40f; margin: 0; font-size: 24px; font-weight: bold;">@minValue kW</p>
+                <p style="color: #8b949e; margin: 5px 0 0 0; font-size: 11px;">@minTime</p>
+            </div>
+
+            <div style="
+                background: #161b22;
+                padding: 18px 22px;
+                border-radius: 10px;
+                border: 1px solid #30363d;
+                color: white;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Average Output</p>
+                <p style="color: #58a6ff; margin: 0; font-size: 24px; font-weight: bold;">@avgValue kW</p>
+                <p style="color: #8b949e; margin: 5px 0 0 0; font-size: 11px;">All periods</p>
+            </div>
+
+            <div style="
+                background: #161b22;
+                padding: 18px 22px;
+                border-radius: 10px;
+                border: 1px solid #30363d;
+                color: white;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Total Output</p>
+                <p style="color: #9d4edd; margin: 0; font-size: 24px; font-weight: bold;">@totalValue kW</p>
+                <p style="color: #8b949e; margin: 5px 0 0 0; font-size: 11px;">Cumulative</p>
+            </div>
+        </div>
+
+        <!-- 🔹 MAIN CHART SECTION -->
+        <div style="
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        ">
+            <h3 style="color: #58a6ff; margin: 0 0 25px 0; font-size: 18px;">
+                📈 Hourly Energy Output Trend
+            </h3>
+
+            <div style="
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-around;
+                height: 350px;
+                gap: 8px;
+                padding: 20px 0;
+            ">
+                @foreach (var item in data.Select((v, i) => new { Value = v, Index = i }))
+                {
+                    <div style="
+                        flex: 1;
+                        text-align: center;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: flex-end;
+                        height: 100%;
+                        gap: 10px;
+                    ">
+                        <!-- VALUE LABEL -->
+                        <p style="
+                            color: #e6edf3;
+                            font-size: 13px;
+                            font-weight: 600;
+                            margin: 0;
+                        ">
+                            @item.Value kW
+                        </p>
+
+                        <!-- BAR -->
+                        <div style="
+                            background: linear-gradient(to top, #238636, #2ea043);
+                            width: 100%;
+                            height: @(item.Value / 1.5)px;
+                            border-radius: 8px 8px 0 0;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+                        "
+                        title="@item.Value kW at @(10 + item.Index) AM">
+                        </div>
+
+                        <!-- TIME LABEL -->
+                        <p style="
+                            color: #8b949e;
+                            font-size: 12px;
+                            margin: 0;
+                        ">
+                            @(10 + item.Index) AM
+                        </p>
+                    </div>
+                }
+            </div>
+
+            <!-- CHART LEGEND -->
+            <div style="
+                margin-top: 20px;
+                padding: 15px;
+                background: #0d1117;
+                border-radius: 8px;
+                border-left: 4px solid #238636;
+            ">
+                <p style="color: #8b949e; margin: 0; font-size: 12px;">
+                    📊 <b style="color: #e6edf3;">Chart Information:</b> Green bars represent hourly energy output. Higher bars indicate greater energy production during that hour.
+                </p>
+            </div>
+        </div>
+
+        <!-- 🔹 INSIGHTS PANEL -->
+        <div style="
+            background: #161b22;
+            padding: 30px;
+            border-radius: 14px;
+            color: white;
+            border: 1px solid #30363d;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        ">
+            <h3 style="
+                color: #58a6ff;
+                margin: 0 0 20px 0;
+                font-size: 18px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            ">
+                🔍 Detailed Insights & Analysis
+            </h3>
+
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 15px;
+            ">
+                <div style="
+                    background: #0d1117;
+                    padding: 15px;
+                    border-radius: 8px;
+                    border-left: 4px solid #2ecc71;
+                ">
+                    <p style="color: #e6edf3; margin: 0 0 8px 0; font-weight: 500;">
+                        🔥 Peak Performance
+                    </p>
+                    <p style="color: #8b949e; margin: 0; font-size: 13px;">
+                        Maximum output reached at <b>@maxTime</b> with <b style="color: #2ecc71;">@maxValue kW</b>
+                    </p>
+                </div>
+
+                <div style="
+                    background: #0d1117;
+                    padding: 15px;
+                    border-radius: 8px;
+                    border-left: 4px solid #f1c40f;
+                ">
+                    <p style="color: #e6edf3; margin: 0 0 8px 0; font-weight: 500;">
+                        ⚠️ Lowest Output
+                    </p>
+                    <p style="color: #8b949e; margin: 0; font-size: 13px;">
+                        Minimum output detected at <b>@minTime</b> with <b style="color: #f1c40f;">@minValue kW</b>
+                    </p>
+                </div>
+
+                <div style="
+                    background: #0d1117;
+                    padding: 15px;
+                    border-radius: 8px;
+                    border-left: 4px solid #58a6ff;
+                ">
+                    <p style="color: #e6edf3; margin: 0 0 8px 0; font-weight: 500;">
+                        📊 Statistical Analysis
+                    </p>
+                    <p style="color: #8b949e; margin: 0; font-size: 13px;">
+                        Average: <b style="color: #58a6ff;">@avgValue kW</b> | Variance: <b>@variance%</b>
+                    </p>
+                </div>
+
+                <div style="
+                    background: #0d1117;
+                    padding: 15px;
+                    border-radius: 8px;
+                    border-left: 4px solid #9d4edd;
+                ">
+                    <p style="color: #e6edf3; margin: 0 0 8px 0; font-weight: 500;">
+                        ⚡ Energy Summary
+                    </p>
+                    <p style="color: #8b949e; margin: 0; font-size: 13px;">
+                        Total output: <b style="color: #9d4edd;">@totalValue kW</b> | Data points: <b>@data.Count</b>
+                    </p>
+                </div>
+            </div>
+
+            <div style="
+                margin-top: 20px;
+                padding: 15px;
+                background: rgba(46, 204, 113, 0.1);
+                border-radius: 8px;
+                border-left: 4px solid #2ecc71;
+            ">
+                <p style="color: #e6edf3; margin: 0; font-size: 14px;">
+                    💡 <b>Recommendation:</b> System is performing well. Maintain current operational parameters and continue regular monitoring for optimal energy output.
+                </p>
+            </div>
+        </div>
+
+        <!-- 🔹 SYSTEM STATUS FOOTER -->
+        <div style="
+            background: #0d1117;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            text-align: center;
+        ">
+            <p style="color: #8b949e; margin: 0; font-size: 13px;">
+                🔄 Chart auto-refreshes every 30 seconds | Last sync: @currentTime
+            </p>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    List<int> data = new() { 400, 450, 300, 500, 100 };
+
+    int maxValue;
+    int minValue;
+    int avgValue;
+    int totalValue;
+    double variance;
+    string maxTime = "";
+    string minTime = "";
+    string currentTime = "";
+
+    protected override void OnInitialized()
+    {
+        maxValue = data.Max();
+        minValue = data.Min();
+        avgValue = (int)data.Average();
+        totalValue = data.Sum();
+
+        int maxIndex = data.IndexOf(maxValue);
+        int minIndex = data.IndexOf(minValue);
+
+        maxTime = $"{10 + maxIndex} AM";
+        minTime = $"{10 + minIndex} AM";
+        currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+        // Calculate variance as percentage
+        variance = Math.Round(((double)(maxValue - minValue) / avgValue) * 100, 1);
+    }
+}

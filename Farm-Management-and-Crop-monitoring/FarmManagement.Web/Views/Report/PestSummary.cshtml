@@ -1,0 +1,114 @@
+@model FarmManagement.Web.Models.ViewModels.PestSummaryViewModel
+@{
+    ViewData["Title"] = "Pest Incident Summary";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#fee2e2;color:#dc2626;"><i class="bi bi-bug"></i></span>
+            Pest Incident Summary
+        </h1>
+        <p>Overview of all pest incidents across crops.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm"><i class="bi bi-arrow-left"></i> Back to Reports</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#f1f5f9;color:#475569;"><i class="bi bi-bug"></i></div>
+            <div><div class="stat-value">@Model.TotalIncidents</div><div class="stat-label">Total Incidents</div></div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fee2e2;color:#dc2626;"><i class="bi bi-exclamation-triangle"></i></div>
+            <div><div class="stat-value" style="color:#dc2626;">@Model.ActiveCount</div><div class="stat-label">Active</div></div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef9c3;color:#ca8a04;"><i class="bi bi-eye"></i></div>
+            <div><div class="stat-value" style="color:#ca8a04;">@Model.MonitoringCount</div><div class="stat-label">Monitoring</div></div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#dcfce7;color:#16a34a;"><i class="bi bi-check-circle"></i></div>
+            <div><div class="stat-value" style="color:#16a34a;">@Model.ResolvedCount</div><div class="stat-label">Resolved</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="fm-card">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-table" style="color:#dc2626;"></i> All Incidents</span>
+        <span style="font-size:.78rem;color:var(--fm-muted);">@Model.TotalIncidents records</span>
+    </div>
+    @if (!Model.Incidents.Any())
+    {
+        <div class="empty-state"><i class="bi bi-shield-check"></i><p>No pest incidents recorded.</p></div>
+    }
+    else
+    {
+        <div style="overflow-x:auto;">
+            <table class="fm-table">
+                <thead>
+                    <tr><th>#</th><th>Pest</th><th>Disease Name</th><th>Crop</th><th>Reported</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Incidents)
+                    {
+                        var badge = item.Status switch {
+                            FarmManagement.Web.Models.Enums.IncidentStatus.Active => "badge-red",
+                            FarmManagement.Web.Models.Enums.IncidentStatus.Monitoring => "badge-yellow",
+                            _ => "badge-green"
+                        };
+                        <tr>
+                            <td style="color:var(--fm-muted);font-size:.8rem;">@item.PestIncidentId</td>
+                            <td style="font-weight:600;">@item.PestName</td>
+                            <td>@(item.DiseaseName ?? "—")</td>
+                            <td>@(item.Crop?.CropName ?? "—")</td>
+                            <td>@item.ReportedDate.ToString("dd MMM yyyy")</td>
+                            <td><span class="badge-pill @badge">@item.Status</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Crop-wise Pest Breakdown -->
+<div class="fm-card mt-4">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-bar-chart" style="color:#dc2626;"></i> Crop-wise Pest Breakdown</span>
+    </div>
+    @if (Model.CropWiseBreakdown.Any())
+    {
+        <div style="overflow-x:auto;">
+            <table class="fm-table">
+                <thead>
+                    <tr><th>Crop</th><th>Active</th><th>Monitoring</th><th>Resolved</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model.CropWiseBreakdown)
+                    {
+                        <tr>
+                            <td style="font-weight:600;">@c.CropName</td>
+                            <td><span class="badge-pill badge-red">@c.Active</span></td>
+                            <td><span class="badge-pill badge-yellow">@c.Monitoring</span></td>
+                            <td><span class="badge-pill badge-green">@c.Resolved</span></td>
+                            <td style="font-weight:700;">@c.Total</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state"><p>No crop-wise data available.</p></div>
+    }
+</div>

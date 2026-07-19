@@ -1,0 +1,163 @@
+@model FarmManagement.Web.Models.Entities.Field
+
+@{
+    ViewData["Title"] = "Field Details";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#dcfce7;color:#16a34a;">
+                <i class="bi bi-grid-3x3-gap"></i>
+            </span>
+            @Model.FieldName
+        </h1>
+        <p>Field details, assigned crops and planting schedules.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="fm-card h-100">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-grid-3x3-gap" style="color:#16a34a;"></i>
+                    Field Information
+                </span>
+            </div>
+            <div class="fm-card-body">
+                <table style="width:100%;font-size:.875rem;">
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;width:45%;">Field ID</td>
+                        <td>#@Model.FieldId</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;">Area</td>
+                        <td style="font-weight:600;">@Model.AreaHectares ha</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;">Soil Type</td>
+                        <td>@Model.SoilType</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;">Location</td>
+                        <td>@Model.Location</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;">Created</td>
+                        <td>@Model.CreatedAt.ToString("dd MMM yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--fm-muted);padding:.4rem 0;">Crops</td>
+                        <td><span class="badge-pill badge-blue">@(Model.Crops?.Count() ?? 0) crops</span></td>
+                    </tr>
+                </table>
+
+                @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor"))
+                {
+                    <div class="mt-3 d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.FieldId" class="btn-fm btn-warn-fm btn-sm-fm">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@Model.FieldId" method="post" class="d-inline"
+                              onsubmit="return confirm('Delete @Model.FieldName?')">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-fm btn-danger-fm btn-sm-fm">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="fm-card mb-4">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-flower1" style="color:#2563eb;"></i>
+                    Crops in this Field
+                </span>
+            </div>
+            @if (Model.Crops == null || !Model.Crops.Any())
+            {
+                <div class="empty-state" style="padding:2rem;">
+                    <i class="bi bi-flower1" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem;"></i>
+                    <p>No crops assigned to this field.</p>
+                </div>
+            }
+            else
+            {
+                <table class="fm-table">
+                    <thead>
+                        <tr>
+                            <th>Crop Name</th>
+                            <th>Type</th>
+                            <th>Season</th>
+                            <th>Status</th>
+                            <th>Expected Harvest</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var crop in Model.Crops)
+                        {
+                            var cb = crop.Status switch { "Growing" => "badge-green", "Harvested" => "badge-gray", _ => "badge-yellow" };
+                            <tr>
+                                <td style="font-weight:600;">@crop.CropName</td>
+                                <td>@crop.CropType</td>
+                                <td>@crop.Season</td>
+                                <td><span class="badge-pill @cb">@crop.Status</span></td>
+                                <td>@crop.ExpectedHarvestDate.ToString("dd MMM yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        <div class="fm-card">
+            <div class="fm-card-header">
+                <span class="ch-title">
+                    <i class="bi bi-calendar3" style="color:#ca8a04;"></i>
+                    Planting Schedules
+                </span>
+            </div>
+            @if (Model.PlantingSchedules == null || !Model.PlantingSchedules.Any())
+            {
+                <div class="empty-state" style="padding:2rem;">
+                    <i class="bi bi-calendar-x" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.5rem;"></i>
+                    <p>No planting schedules for this field.</p>
+                </div>
+            }
+            else
+            {
+                <table class="fm-table">
+                    <thead>
+                        <tr>
+                            <th>Scheduled Date</th>
+                            <th>Expected (kg)</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.PlantingSchedules)
+                        {
+                            var sb = s.Status switch { "Scheduled" => "badge-blue", "Completed" => "badge-green", _ => "badge-gray" };
+                            <tr>
+                                <td>@s.ScheduledDate.ToString("dd MMM yyyy")</td>
+                                <td>@s.ExpectedYieldKg kg</td>
+                                <td><span class="badge-pill @sb">@s.Status</span></td>
+                                <td>@(s.Notes ?? "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

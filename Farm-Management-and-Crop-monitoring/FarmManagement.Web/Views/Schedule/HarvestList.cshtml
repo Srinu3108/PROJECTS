@@ -1,0 +1,119 @@
+@model IEnumerable<FarmManagement.Web.Models.Entities.PlantingSchedule>
+
+@{
+    ViewData["Title"] = "Upcoming Harvests";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#dcfce7;color:#16a34a;">
+                <i class="bi bi-basket"></i>
+            </span>
+            Upcoming Harvests
+        </h1>
+        <p>Scheduled harvests in the next 30 days.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-calendar3"></i> All Schedules
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="fm-alert fm-alert-success mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>@TempData["Success"]</span>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="fm-alert fm-alert-danger mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="fm-card">
+        <div class="empty-state">
+            <i class="bi bi-calendar-x"></i>
+            <p>No upcoming harvests in the next 30 days.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="fm-alert fm-alert-success mb-3">
+        <i class="bi bi-calendar-check"></i>
+        <span><strong>@Model.Count()</strong> harvest(s) scheduled in the next 30 days.</span>
+    </div>
+
+    <div class="fm-card">
+        <div class="fm-card-header">
+            <span class="ch-title">
+                <i class="bi bi-table" style="color:#16a34a;"></i>
+                Harvest Schedule
+            </span>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="fm-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Crop</th>
+                        <th>Field</th>
+                        <th>Scheduled Date</th>
+                        <th>Days Remaining</th>
+                        <th>Expected Yield</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var daysLeft = (item.ScheduledDate - DateTime.Today).Days;
+                        <tr>
+                            <td style="color:var(--fm-muted);font-size:.8rem;">@item.ScheduleId</td>
+                            <td style="font-weight:600;">@(item.Crop?.CropName ?? "—")</td>
+                            <td>@(item.Field?.FieldName ?? "—")</td>
+                            <td>@item.ScheduledDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @if (daysLeft == 0)
+                                {
+                                    <span class="badge-pill badge-red">Today</span>
+                                }
+                                else if (daysLeft <= 7)
+                                {
+                                    <span class="badge-pill badge-yellow">@daysLeft day(s)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-pill badge-blue">@daysLeft day(s)</span>
+                                }
+                            </td>
+                            <td>@item.ExpectedYieldKg kg</td>
+                            <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                @(item.Notes ?? "—")
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:.3rem;">
+                                    <a asp-action="Details" asp-route-id="@item.ScheduleId"
+                                       class="btn-fm btn-info-fm btn-sm-fm">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="RecordHarvest" asp-route-id="@item.ScheduleId"
+                                       class="btn-fm btn-primary-fm btn-sm-fm">
+                                        <i class="bi bi-basket"></i> Record
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

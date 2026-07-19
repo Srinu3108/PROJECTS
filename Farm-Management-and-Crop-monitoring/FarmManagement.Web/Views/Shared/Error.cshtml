@@ -1,0 +1,44 @@
+﻿@model FarmManagement.Web.Models.ViewModels.ErrorViewModel
+
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="d-flex justify-content-center align-items-center"
+     style="min-height: 60vh;">
+    <div class="text-center">
+        <div class="mb-4">
+            <!-- Broken pitchfork -->
+            <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="58" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+                <rect x="57" y="45" width="6" height="45" rx="2" fill="#92400e"/>
+                <path d="M48 30 L48 50" stroke="#374151" stroke-width="3" stroke-linecap="round"/>
+                <path d="M60 25 L60 45" stroke="#374151" stroke-width="3" stroke-linecap="round"/>
+                <path d="M72 30 L72 50" stroke="#374151" stroke-width="3" stroke-linecap="round"/>
+                <path d="M48 50 L72 50" stroke="#374151" stroke-width="3" stroke-linecap="round"/>
+                <path d="M35 55 L50 40" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+                <path d="M50 55 L35 40" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <h1 class="display-4 fw-bold text-danger">Oops!</h1>
+        <h4 class="text-muted mb-3">Something went wrong on the farm.</h4>
+
+        <p class="text-muted mt-3">
+            A storm hit the server! An unexpected error occurred while processing your request.
+            <br />
+            Please try again or contact your system administrator.
+        </p>
+
+        <div class="mt-4 d-flex justify-content-center gap-3">
+            <a asp-controller="Home" asp-action="Index"
+                   class="btn btn-success">
+                <i class="bi bi-house"></i> Back to Dashboard
+            </a>
+            <a href="javascript:history.back()"
+                   class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Go Back
+            </a>
+        </div>
+    </div>
+</div>

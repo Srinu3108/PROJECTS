@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth-card text-center">
+    <div class="auth-card-body py-5">
+        <i class="bi bi-shield-exclamation text-danger" style="font-size:3.5rem;"></i>
+        <h4 class="fw-bold mt-3 mb-2" style="color:#1a3c2b;">Access Denied</h4>
+        <p class="text-muted small mb-4">You do not have permission to view this page.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-auth">
+            <i class="bi bi-house me-2"></i>Go to Dashboard
+        </a>
+    </div>
+</div>

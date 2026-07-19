@@ -1,0 +1,131 @@
+@model FarmManagement.Web.Models.ViewModels.RegisterViewModel
+@using FarmManagement.Web.Models.Enums
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_AuthLayout";
+}
+
+<div class="auth-card">
+    <div class="auth-card-body">
+
+        <!-- Header -->
+        <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:1.4rem;">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#1d4ed8;flex-shrink:0;">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <div>
+                <div class="auth-card-title">Create account</div>
+                <div class="auth-card-sub" style="margin-bottom:0;">Join the AgroManage platform</div>
+            </div>
+        </div>
+
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 px-3 rounded-3 mb-3 d-flex align-items-center gap-2" style="font-size:.82rem;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;display:none!important;">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span></span>
+            </div>
+
+            <!-- Full Name -->
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">Full Name</label>
+                <div class="input-icon-wrap">
+                    <i class="bi bi-person input-icon-left"></i>
+                    <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
+                </div>
+                <span asp-validation-for="FullName" class="text-danger" style="font-size:.75rem;"></span>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email address</label>
+                <div class="input-icon-wrap">
+                    <i class="bi bi-envelope input-icon-left"></i>
+                    <input asp-for="Email" class="form-control" placeholder="you@example.com" autocomplete="email" />
+                </div>
+                <span asp-validation-for="Email" class="text-danger" style="font-size:.75rem;"></span>
+            </div>
+
+            <!-- Role -->
+            <div class="mb-3">
+                <label asp-for="Role" class="form-label">Your Role</label>
+                <div class="input-icon-wrap">
+                    <i class="bi bi-person-badge input-icon-left"></i>
+                    <select asp-for="Role" class="form-select">
+                        <option value="@((int)UserRole.Agronomist)">Agronomist — Pest &amp; analytics</option>
+                        <option value="@((int)UserRole.Storekeeper)">Storekeeper — Resources &amp; inventory</option>
+                        <option value="@((int)UserRole.FieldSupervisor)">Field Supervisor — Planning &amp; oversight</option>
+                        <option value="@((int)UserRole.Farmer)">Farmer — Crops &amp; fields</option>
+                        <option value="@((int)UserRole.Admin)">Admin — Full system access</option>
+                    </select>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem;">
+                    <span class="field-tag" style="background:rgba(220,38,38,.08);color:#b91c1c;border:1px solid rgba(220,38,38,.15);">
+                        <i class="bi bi-shield-fill"></i>Admin
+                    </span>
+                    <span class="field-tag" style="background:rgba(22,163,74,.08);color:#15803d;border:1px solid rgba(22,163,74,.15);">
+                        <i class="bi bi-flower1"></i>Farmer
+                    </span>
+                    <span class="field-tag" style="background:rgba(37,99,235,.08);color:#1d4ed8;border:1px solid rgba(37,99,235,.15);">
+                        <i class="bi bi-map"></i>Field Supervisor
+                    </span>
+                    <span class="field-tag" style="background:rgba(234,88,12,.08);color:#c2410c;border:1px solid rgba(234,88,12,.15);">
+                        <i class="bi bi-boxes"></i>Storekeeper
+                    </span>
+                    <span class="field-tag" style="background:rgba(124,58,237,.08);color:#6d28d9;border:1px solid rgba(124,58,237,.15);">
+                        <i class="bi bi-eyedropper"></i>Agronomist
+                    </span>
+                </div>
+                <span asp-validation-for="Role" class="text-danger" style="font-size:.75rem;"></span>
+            </div>
+
+            <!-- Password row -->
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-lock input-icon-left"></i>
+                        <input asp-for="Password" class="form-control"
+                               placeholder="Min 6 chars" autocomplete="new-password" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger" style="font-size:.72rem;"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="ConfirmPassword" class="form-label">Confirm</label>
+                    <div class="input-icon-wrap">
+                        <i class="bi bi-lock-fill input-icon-left"></i>
+                        <input asp-for="ConfirmPassword" class="form-control"
+                               placeholder="Re-enter" autocomplete="new-password" />
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger" style="font-size:.72rem;"></span>
+                </div>
+            </div>
+
+            <!-- Password hint -->
+            <div class="mb-4">
+                <label asp-for="PasswordHint" class="form-label">Password Hint</label>
+                <div class="input-icon-wrap">
+                    <i class="bi bi-lightbulb input-icon-left"></i>
+                    <input asp-for="PasswordHint" class="form-control" placeholder="e.g. My pet's name" />
+                </div>
+                <div style="font-size:.72rem;color:#94a3b8;margin-top:.3rem;">
+                    <i class="bi bi-info-circle me-1"></i>Used to verify identity when resetting password
+                </div>
+                <span asp-validation-for="PasswordHint" class="text-danger" style="font-size:.75rem;"></span>
+            </div>
+
+            <button type="submit" class="btn-auth">
+                <i class="bi bi-person-check-fill"></i>
+                Create Account
+            </button>
+        </form>
+    </div>
+
+    <div class="auth-card-footer">
+        <span class="auth-footer-text">Already have an account?</span>
+        <a asp-action="Login" class="auth-footer-link ms-1">Sign in &rarr;</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

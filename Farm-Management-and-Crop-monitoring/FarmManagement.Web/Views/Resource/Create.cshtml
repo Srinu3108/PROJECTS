@@ -1,0 +1,162 @@
+@model FarmManagement.Web.Models.ViewModels.InventoryViewModel
+@{
+    ViewData["Title"] = "Add Resource";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#ffedd5;color:#ea580c;">
+                <i class="bi bi-box-seam"></i>
+            </span>
+            Add Resource
+        </h1>
+        <p>Fill in the details below to add a new resource to inventory.</p>
+    </div>
+    <a asp-action="Index" class="btn-fm btn-outline-fm">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="fm-card" style="max-width:720px;">
+    <div class="fm-card-header">
+        <span class="ch-title"><i class="bi bi-box-seam" style="color:#ea580c;"></i> Resource Details</span>
+    </div>
+    <div class="fm-card-body fm-form">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="fm-alert fm-alert-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Type" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-box fm-fi" style="color:#ea580c;"></i>
+                        <select asp-for="Type" class="form-select" id="typeSelect"
+                                asp-items="Html.GetEnumSelectList<FarmManagement.Web.Models.Enums.ResourceType>()">
+                            <option value="">-- Select Type --</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="Type" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6" id="nameField">
+                    <label asp-for="Name" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-tag fm-fi"></i>
+                        <input asp-for="Name" class="form-control" placeholder="Enter resource name" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6" id="quantityField">
+                    <label asp-for="Quantity" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-hash fm-fi"></i>
+                        <input asp-for="Quantity" class="form-control" placeholder="e.g. 100" />
+                    </div>
+                    <span asp-validation-for="Quantity" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6" id="unitField">
+                    <label asp-for="Unit" class="form-label"></label>
+                    <div class="fm-field">
+                        <i class="bi bi-123 fm-fi"></i>
+                        <input asp-for="Unit" class="form-control" placeholder="e.g. kg, L, units" />
+                    </div>
+                    <span asp-validation-for="Unit" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <!-- Pest fields shown only when Type == Pesticide -->
+            <div id="pesticideFields" style="display:none;" class="mt-3">
+                <div class="fm-section"><i class="bi bi-bug" style="color:#dc2626;"></i> Pest Incident Details</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="PestName" class="form-label"></label>
+                        <div class="fm-field">
+                            <i class="bi bi-bug fm-fi" style="color:#dc2626;"></i>
+                            <input asp-for="PestName" class="form-control" placeholder="e.g. Aphids, Brown Plant Hopper" />
+                        </div>
+                        <span asp-validation-for="PestName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DiseaseName" class="form-label"></label>
+                        <div class="fm-field">
+                            <i class="bi bi-virus2 fm-fi" style="color:#dc2626;"></i>
+                            <input asp-for="DiseaseName" class="form-control" placeholder="e.g. Blight, Leaf Curl" />
+                        </div>
+                        <span asp-validation-for="DiseaseName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="CropId" class="form-label"></label>
+                        <div class="fm-field">
+                            <i class="bi bi-flower1 fm-fi" style="color:#16a34a;"></i>
+                            <select asp-for="CropId" class="form-select">
+                                <option value="">-- Select Crop --</option>
+                                @if (ViewBag.Crops != null)
+                                {
+                                    foreach (var crop in ViewBag.Crops)
+                                    {
+                                        <option value="@crop.CropId">@crop.CropName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <span asp-validation-for="CropId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="PestDescription" class="form-label"></label>
+                        <div class="fm-field fm-field-ta">
+                            <i class="bi bi-chat-left-text fm-fi"></i>
+                            <textarea asp-for="PestDescription" class="form-control" rows="3"
+                                      placeholder="Describe the pest incident in detail..."></textarea>
+                        </div>
+                        <span asp-validation-for="PestDescription" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="fm-alert fm-alert-warning mt-3">
+                    <i class="bi bi-info-circle"></i>
+                    <span>A pest incident will be auto-created and this pesticide resource will be linked to it.</span>
+                </div>
+            </div>
+
+            <div class="fm-actions">
+                <button type="submit" class="btn-fm btn-primary-fm">
+                    <i class="bi bi-plus-circle"></i> Add Resource
+                </button>
+                <a asp-action="Index" class="btn-fm btn-ghost-fm">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        (function () {
+            var typeSelect = document.getElementById('typeSelect');
+            var pesticideFields = document.getElementById('pesticideFields');
+            var nameField = document.getElementById('nameField');
+            var quantityField = document.getElementById('quantityField');
+            var unitField = document.getElementById('unitField');
+
+            function onTypeChange() {
+                var isPesticide = (typeSelect.value === '1');
+                var isEquipment = (typeSelect.value === '4');
+                pesticideFields.style.display = isPesticide ? '' : 'none';
+                nameField.style.display = isPesticide ? 'none' : '';
+                quantityField.style.display = isPesticide ? 'none' : '';
+                unitField.style.display = (isPesticide || isEquipment) ? 'none' : '';
+                if (isEquipment) {
+                    document.getElementById('Unit').value = 'units';
+                } else if (!isPesticide) {
+                    document.getElementById('Unit').value = '';
+                }
+            }
+
+            typeSelect.addEventListener('change', onTypeChange);
+            onTypeChange();
+        })();
+    </script>
+}

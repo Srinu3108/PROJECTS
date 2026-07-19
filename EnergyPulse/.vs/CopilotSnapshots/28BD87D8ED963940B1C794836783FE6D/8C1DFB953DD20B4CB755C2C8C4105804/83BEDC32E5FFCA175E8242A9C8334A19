@@ -1,0 +1,646 @@
+﻿@page "/devices"
+@inject HttpClient Http
+
+<div style="
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    min-height: 100vh;
+">
+    <div style="width: 100%; max-width: 1400px;">
+
+        <!-- 🔹 HEADER -->
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="color: #58a6ff; margin: 0; font-size: 28px;">
+                EnergyPulse – Device Management System
+            </h2>
+
+            <p style="color: #8b949e; margin: 8px 0; font-size: 14px;">
+                Monitor, manage, and control all connected energy devices in real-time.
+            </p>
+
+            <h1 style="color: #2ecc71; margin: 15px 0 5px 0; font-size: 32px;">
+                ⚙️ Device Operations
+            </h1>
+
+            <p style="color: #8b949e; font-size: 13px; margin: 0;">
+                Manage @(devices?.Count ?? 0) devices | Last updated: @currentTime
+            </p>
+        </div>
+
+        <!-- 🔹 DEVICE STATISTICS CARDS -->
+        <div style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        ">
+            <div style="
+                background: #161b22;
+                padding: 18px 22px;
+                border-radius: 10px;
+                border: 1px solid #30363d;
+                color: white;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Total Devices</p>
+                <p style="color: #58a6ff; margin: 0; font-size: 24px; font-weight: bold;">@(devices?.Count ?? 0)</p>
+            </div>
+
+            <div style="
+                background: #161b22;
+                padding: 18px 22px;
+                border-radius: 10px;
+                border: 1px solid #30363d;
+                color: white;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Active Devices</p>
+                <p style="color: #2ecc71; margin: 0; font-size: 24px; font-weight: bold;">@(devices?.Count(d => d.status == "Active") ?? 0)</p>
+            </div>
+
+            <div style="
+                background: #161b22;
+                padding: 18px 22px;
+                border-radius: 10px;
+                border: 1px solid #30363d;
+                color: white;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Offline Devices</p>
+                <p style="color: #e74c3c; margin: 0; font-size: 24px; font-weight: bold;">@(devices?.Count(d => d.status == "Offline") ?? 0)</p>
+            </div>
+
+            <div style="
+                background: #161b22;
+                padding: 18px 22px;
+                border-radius: 10px;
+                border: 1px solid #30363d;
+                color: white;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; margin: 0 0 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">System Health</p>
+                <p style="color: @(GetSystemHealthColor()); margin: 0; font-size: 24px; font-weight: bold;">@GetSystemHealthPercentage()%</p>
+            </div>
+        </div>
+
+        <!-- 🔹 ROLE & ACTIONS BAR -->
+        <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background: #161b22;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+        ">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button @onclick='() => { FilterStatus = ""; filterText = ""; }'
+                        style="
+                            background: @(FilterStatus == "" ? "#238636" : "#30363d");
+                            color: white;
+                            padding: 10px 16px;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 500;
+                            transition: all 0.3s ease;
+                        ">
+                    📋 All Devices
+                </button>
+
+                <button @onclick='() => { FilterStatus = "Active"; filterText = ""; }'
+                        style="
+                            background: @(FilterStatus == "Active" ? "#238636" : "#30363d");
+                            color: white;
+                            padding: 10px 16px;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 500;
+                            transition: all 0.3s ease;
+                        ">
+                    🟢 Active (@(devices?.Count(d => d.status == "Active") ?? 0))
+                </button>
+
+                <button @onclick='() => { FilterStatus = "Offline"; filterText = ""; }'
+                        style="
+                            background: @(FilterStatus == "Offline" ? "#da3633" : "#30363d");
+                            color: white;
+                            padding: 10px 16px;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 500;
+                            transition: all 0.3s ease;
+                        ">
+                    🔴 Offline (@(devices?.Count(d => d.status == "Offline") ?? 0))
+                </button>
+            </div>
+
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="color: #8b949e; font-size: 13px;">
+                    Role: <b style="color: #2ecc71;">@(isAdmin ? "Administrator" : "Viewer")</b>
+                </span>
+                <button @onclick="ToggleRole"
+                        style="
+                            background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+                            color: white;
+                            padding: 10px 16px;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 500;
+                            transition: all 0.3s ease;
+                            font-size: 13px;
+                        ">
+                    🔄 Switch Role
+                </button>
+            </div>
+        </div>
+
+        <!-- 🔹 ADD DEVICE FORM (Admin Only) -->
+        @if (isAdmin)
+        {
+            <div style="
+                background: #161b22;
+                border: 1px solid #30363d;
+                padding: 25px;
+                border-radius: 14px;
+                margin-bottom: 30px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            ">
+                <h3 style="color: #58a6ff; margin: 0 0 20px 0; font-size: 18px;">
+                    ➕ Add New Device
+                </h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <input placeholder="Device Name (e.g., Solar Panel 1)" 
+                           @bind="newDevice.name"
+                           style="
+                               background: #0d1117;
+                               color: #e6edf3;
+                               padding: 12px 15px;
+                               border: 1px solid #30363d;
+                               border-radius: 8px;
+                               font-size: 14px;
+                           " />
+
+                    <select @bind="newDevice.status"
+                            style="
+                                background: #0d1117;
+                                color: #e6edf3;
+                                padding: 12px 15px;
+                                border: 1px solid #30363d;
+                                border-radius: 8px;
+                                font-size: 14px;
+                            ">
+                        <option value="">-- Select Status --</option>
+                        <option value="Active">🟢 Active</option>
+                        <option value="Offline">🔴 Offline</option>
+                    </select>
+
+                    <input type="number" placeholder="Site ID" 
+                           @bind="newDevice.siteId"
+                           style="
+                               background: #0d1117;
+                               color: #e6edf3;
+                               padding: 12px 15px;
+                               border: 1px solid #30363d;
+                               border-radius: 8px;
+                               font-size: 14px;
+                           " />
+
+                    <button @onclick="AddDevice"
+                            style="
+                                background: linear-gradient(135deg, #238636 0%, #1a6e2b 100%);
+                                color: white;
+                                padding: 12px 20px;
+                                border: none;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-weight: 500;
+                                transition: all 0.3s ease;
+                            ">
+                        ✅ Add Device
+                    </button>
+                </div>
+            </div>
+        }
+
+        <!-- 🔹 SEARCH & FILTER -->
+        <div style="
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        ">
+            <div style="
+                flex: 1;
+                min-width: 250px;
+                position: relative;
+            ">
+                <input placeholder="🔍 Search device by name..."
+                       @bind="filterText"
+                       style="
+                           width: 100%;
+                           background: #161b22;
+                           color: #e6edf3;
+                           padding: 12px 15px;
+                           border: 1px solid #30363d;
+                           border-radius: 8px;
+                           font-size: 14px;
+                       " />
+            </div>
+        </div>
+
+        <!-- 🔹 DEVICES TABLE/CARDS -->
+        @if (devices == null)
+        {
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 60px 20px;
+                background: #161b22;
+                border-radius: 12px;
+                border: 1px solid #30363d;
+            ">
+                <p style="color: #8b949e; font-size: 18px; margin: 0;">
+                    ⏳ Loading devices...
+                </p>
+            </div>
+        }
+        else if (devices.Count == 0)
+        {
+            <div style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 60px 20px;
+                background: #161b22;
+                border-radius: 12px;
+                border: 1px solid #30363d;
+                text-align: center;
+            ">
+                <p style="color: #8b949e; font-size: 18px; margin: 0 0 10px 0;">
+                    📭 No devices found
+                </p>
+                <p style="color: #8b949e; font-size: 13px; margin: 0;">
+                    Start by adding your first device to monitor energy output
+                </p>
+            </div>
+        }
+        else
+        {
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            ">
+                @foreach (var device in GetFilteredDevices())
+                {
+                    <div style="
+                        background: #161b22;
+                        border: 1px solid #30363d;
+                        padding: 20px;
+                        border-radius: 14px;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                        transition: all 0.3s ease;
+                    ">
+                        <!-- Device Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                            <div>
+                                @if (editId == device.id)
+                                {
+                                    <input @bind="editDevice.name"
+                                           style="
+                                               background: #0d1117;
+                                               color: #e6edf3;
+                                               padding: 8px 10px;
+                                               border: 1px solid #30363d;
+                                               border-radius: 6px;
+                                               font-weight: 600;
+                                               width: 100%;
+                                               margin-bottom: 8px;
+                                           " />
+                                }
+                                else
+                                {
+                                    <h4 style="color: #58a6ff; margin: 0 0 5px 0; font-size: 16px;">
+                                        @device.name
+                                    </h4>
+                                }
+                                <p style="color: #8b949e; margin: 0; font-size: 12px;">
+                                    Device ID: <b>#@device.id</b>
+                                </p>
+                            </div>
+
+                            <span style="
+                                padding: 6px 12px;
+                                border-radius: 6px;
+                                background: @(device.status == "Active" ? "rgba(46, 204, 113, 0.1)" : "rgba(231, 76, 60, 0.1)");
+                                color: @(device.status == "Active" ? "#2ecc71" : "#e74c3c");
+                                font-size: 12px;
+                                font-weight: 600;
+                            ">
+                                @(device.status == "Active" ? "🟢 ACTIVE" : "🔴 OFFLINE")
+                            </span>
+                        </div>
+
+                        <!-- Device Info -->
+                        <div style="
+                            background: #0d1117;
+                            padding: 12px;
+                            border-radius: 8px;
+                            margin-bottom: 15px;
+                            border-left: 4px solid #238636;
+                        ">
+                            <div style="display: grid; gap: 8px; font-size: 13px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: #8b949e;">Status:</span>
+                                    @if (editId == device.id)
+                                    {
+                                        <select @bind="editDevice.status"
+                                                style="
+                                                    background: #161b22;
+                                                    color: #e6edf3;
+                                                    border: 1px solid #30363d;
+                                                    border-radius: 4px;
+                                                    padding: 4px 8px;
+                                                    font-size: 12px;
+                                                ">
+                                            <option value="Active">🟢 Active</option>
+                                            <option value="Offline">🔴 Offline</option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: @(device.status == "Active" ? "#2ecc71" : "#e74c3c"); font-weight: 600;">
+                                            @device.status
+                                        </span>
+                                    }
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: #8b949e;">Site ID:</span>
+                                    <span style="color: #e6edf3; font-weight: 600;">@device.siteId</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: #8b949e;">Last Updated:</span>
+                                    <span style="color: #e6edf3; font-size: 11px;">@DateTime.Now.ToString("MM/dd/yyyy HH:mm")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Device Actions -->
+                        <div style="display: grid; gap: 10px;">
+                            @if (editId == device.id)
+                            {
+                                @if (isAdmin)
+                                {
+                                    <button @onclick="UpdateDevice"
+                                            style="
+                                                background: linear-gradient(135deg, #238636 0%, #1a6e2b 100%);
+                                                color: white;
+                                                padding: 10px;
+                                                border: none;
+                                                border-radius: 8px;
+                                                cursor: pointer;
+                                                font-weight: 500;
+                                                font-size: 13px;
+                                                transition: all 0.3s ease;
+                                            ">
+                                        💾 Save Changes
+                                    </button>
+
+                                    <button @onclick="CancelEdit"
+                                            style="
+                                                background: #6e7681;
+                                                color: white;
+                                                padding: 10px;
+                                                border: none;
+                                                border-radius: 8px;
+                                                cursor: pointer;
+                                                font-weight: 500;
+                                                font-size: 13px;
+                                                transition: all 0.3s ease;
+                                            ">
+                                        ❌ Cancel
+                                    </button>
+                                }
+                            }
+                            else
+                            {
+                                @if (isAdmin)
+                                {
+                                    <button @onclick="() => StartEdit(device)"
+                                            style="
+                                                background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+                                                color: white;
+                                                padding: 10px;
+                                                border: none;
+                                                border-radius: 8px;
+                                                cursor: pointer;
+                                                font-weight: 500;
+                                                font-size: 13px;
+                                                transition: all 0.3s ease;
+                                            ">
+                                        ✏️ Edit Device
+                                    </button>
+
+                                    <button @onclick="() => DeleteDevice(device.id)"
+                                            style="
+                                                background: linear-gradient(135deg, #da3633 0%, #b91c1c 100%);
+                                                color: white;
+                                                padding: 10px;
+                                                border: none;
+                                                border-radius: 8px;
+                                                cursor: pointer;
+                                                font-weight: 500;
+                                                font-size: 13px;
+                                                transition: all 0.3s ease;
+                                            ">
+                                        🗑️ Delete Device
+                                    </button>
+                                }
+                                else
+                                {
+                                    <div style="
+                                        padding: 10px;
+                                        background: rgba(88, 166, 255, 0.1);
+                                        border-radius: 8px;
+                                        text-align: center;
+                                        border-left: 4px solid #58a6ff;
+                                    ">
+                                        <span style="color: #8b949e; font-size: 12px;">
+                                            👁️ View Only - Switch to Admin to edit
+                                        </span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- 🔹 SYSTEM FOOTER -->
+        <div style="
+            background: #0d1117;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            text-align: center;
+        ">
+            <p style="color: #8b949e; margin: 0; font-size: 13px;">
+                ✅ All @(devices?.Count ?? 0) devices monitored | System Status: OPERATIONAL | Last sync: @currentTime
+            </p>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private bool isAdmin = false;
+    private List<DeviceDto> devices;
+    private string filterText = "";
+    private string FilterStatus = "";
+    private string currentTime = "";
+    private DeviceDto newDevice = new DeviceDto();
+    private int editId = 0;
+    private DeviceDto editDevice = new DeviceDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        await LoadDevices();
+    }
+
+    private async Task LoadDevices()
+    {
+        try
+        {
+            devices = await Http.GetFromJsonAsync<List<DeviceDto>>("api/device");
+            if (devices == null) devices = new List<DeviceDto>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading devices: {ex.Message}");
+            devices = new List<DeviceDto>();
+        }
+    }
+
+    private async Task AddDevice()
+    {
+        if (string.IsNullOrWhiteSpace(newDevice.name) || string.IsNullOrWhiteSpace(newDevice.status))
+        {
+            return;
+        }
+
+        try
+        {
+            await Http.PostAsJsonAsync("api/device", newDevice);
+            newDevice = new DeviceDto();
+            await LoadDevices();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding device: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteDevice(int id)
+    {
+        if (isAdmin)
+        {
+            try
+            {
+                await Http.DeleteAsync($"api/device/{id}");
+                await LoadDevices();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting device: {ex.Message}");
+            }
+        }
+    }
+
+    private void StartEdit(DeviceDto device)
+    {
+        editId = device.id;
+        editDevice = new DeviceDto
+        {
+            id = device.id,
+            name = device.name,
+            status = device.status,
+            siteId = device.siteId
+        };
+    }
+
+    private async Task UpdateDevice()
+    {
+        try
+        {
+            await Http.PutAsJsonAsync($"api/device/{editDevice.id}", editDevice);
+            editId = 0;
+            await LoadDevices();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating device: {ex.Message}");
+        }
+    }
+
+    private void CancelEdit()
+    {
+        editId = 0;
+    }
+
+    private void ToggleRole()
+    {
+        isAdmin = !isAdmin;
+    }
+
+    private List<DeviceDto> GetFilteredDevices()
+    {
+        return devices
+            .Where(d => 
+                (string.IsNullOrEmpty(FilterStatus) || d.status == FilterStatus) &&
+                (string.IsNullOrEmpty(filterText) || d.name.Contains(filterText, StringComparison.OrdinalIgnoreCase))
+            )
+            .ToList();
+    }
+
+    private string GetSystemHealthColor()
+    {
+        if (devices == null || devices.Count == 0) return "#2ecc71";
+
+        var activeCount = devices.Count(d => d.status == "Active");
+        var percentage = (double)activeCount / devices.Count * 100;
+
+        return percentage >= 80 ? "#2ecc71" : percentage >= 50 ? "#f1c40f" : "#e74c3c";
+    }
+
+    private int GetSystemHealthPercentage()
+    {
+        if (devices == null || devices.Count == 0) return 100;
+
+        var activeCount = devices.Count(d => d.status == "Active");
+        return (int)((double)activeCount / devices.Count * 100);
+    }
+
+    public class DeviceDto
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public string status { get; set; }
+        public int siteId { get; set; }
+    }
+}

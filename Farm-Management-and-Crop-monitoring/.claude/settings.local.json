@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet ef:*)",
+      "Bash(dotnet tool:*)",
+      "Bash(dotnet build:*)",
+      "Bash(sqlcmd -S \"LTIN703412\\\\SQLEXPRESS\" -d DB -Q \"IF NOT EXISTS \\(SELECT 1 FROM __EFMigrationsHistory WHERE MigrationId='20260403091609_FinalDatabaseSetup'\\) INSERT INTO __EFMigrationsHistory VALUES \\('20260403091609_FinalDatabaseSetup','10.0.5'\\); IF NOT EXISTS \\(SELECT 1 FROM __EFMigrationsHistory WHERE MigrationId='20260407044759_IntialFieldTable'\\) INSERT INTO __EFMigrationsHistory VALUES \\('20260407044759_IntialFieldTable','10.0.5'\\);\")",
+      "Bash(sqlcmd -S \"LTIN703412\\\\SQLEXPRESS\" -d DB -Q \"SELECT OBJECT_NAME\\(OBJECT_ID\\) AS TableName FROM sys.objects WHERE type='U' ORDER BY TableName;\")",
+      "Bash(sqlcmd -S \"LTIN703412\\\\SQLEXPRESS\" -d DB -Q \"CREATE TABLE [AppUsers] \\([UserId] int NOT NULL IDENTITY, [FullName] nvarchar\\(100\\) NOT NULL, [Email] nvarchar\\(200\\) NOT NULL, [PasswordHash] nvarchar\\(max\\) NOT NULL, [Role] int NOT NULL, [CreatedAt] datetime2 NOT NULL, CONSTRAINT [PK_AppUsers] PRIMARY KEY \\([UserId]\\)\\); CREATE UNIQUE INDEX [IX_AppUsers_Email] ON [AppUsers] \\([Email]\\); INSERT INTO __EFMigrationsHistory VALUES \\('20260415042107_AddAppUser','10.0.5'\\);\")",
+      "Bash(sqlcmd -S \"LTIN703412\\\\SQLEXPRESS\" -d DB -Q \"SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='AppUsers' ORDER BY ORDINAL_POSITION;\")",
+      "Bash(dotnet --version)",
+      "Bash(taskkill /PID 23136 /F)",
+      "Bash(cmd /c \"taskkill /PID 23136 /F\")",
+      "Bash(cmd /c \"taskkill /IM FarmManagement.Web.exe /F 2>&1\")",
+      "Bash(cmd /c \"wmic process where name='FarmManagement.Web.exe' get ProcessId,Name 2>&1\")",
+      "Bash(cmd /c \"powershell -Command \\\\\"Stop-Process -Id 23136 -Force -ErrorAction SilentlyContinue; Stop-Process -Name 'FarmManagement.Web' -Force -ErrorAction SilentlyContinue; Write-Host 'Done'\\\\\"\")",
+      "Bash(cmd /c \"powershell -Command \\\\\"Get-Process -Id 23136 -ErrorAction SilentlyContinue | Select-Object Id,Name\\\\\"\")"
+    ]
+  }
+}

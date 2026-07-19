@@ -1,0 +1,154 @@
+@model IEnumerable<FarmManagement.Web.Models.Entities.PlantingSchedule>
+
+@{
+    ViewData["Title"] = "Planting Schedules";
+}
+
+<div class="page-header">
+    <div class="page-header-left">
+        <h1>
+            <span class="ph-icon" style="background:#dbeafe;color:#2563eb;">
+                <i class="bi bi-calendar3"></i>
+            </span>
+            Planting Schedules
+        </h1>
+        <p>Plan and track crop planting and harvest activities.</p>
+    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor"))
+    {
+        <a asp-action="Create" class="btn-fm btn-primary-fm">
+            <i class="bi bi-plus-circle"></i> New Schedule
+        </a>
+    }
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="fm-alert fm-alert-success mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>@TempData["Success"]</span>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="fm-alert fm-alert-danger mb-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
+<form method="get" class="mb-3 d-flex gap-2" style="max-width:400px;">
+    <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search schedules..." />
+    <button type="submit" class="btn-fm btn-primary-fm"><i class="bi bi-search"></i></button>
+    @if (!string.IsNullOrEmpty((string?)ViewBag.Search))
+    {
+        <a asp-action="Index" class="btn-fm btn-outline-fm"><i class="bi bi-x-lg"></i></a>
+    }
+</form>
+
+<div class="fm-card">
+    <div class="fm-card-header">
+        <span class="ch-title">
+            <i class="bi bi-table" style="color:#2563eb;"></i>
+            All Schedules
+        </span>
+        <span style="font-size:.78rem;color:var(--fm-muted);">@Model.Count() records</span>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-calendar3"></i>
+            <p>No schedules found. Create your first planting schedule.</p>
+        </div>
+    }
+    else
+    {
+        <div style="overflow-x:auto;">
+            <table class="fm-table">
+                <thead>
+                    <tr>
+                        <th>S.No</th>
+                        <th>Crop</th>
+                        <th>Field</th>
+                        <th>Scheduled Date</th>
+                        <th>Expected Yield</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ var sno = 1; }
+                    @foreach (var item in Model)
+                    {
+                        var schBadge = item.Status switch {
+                            "Scheduled"  => "badge-blue",
+                            "Completed"  => "badge-green",
+                            "Cancelled"  => "badge-gray",
+                            _            => "badge-yellow"
+                        };
+                        <tr>
+                            <td style="color:var(--fm-muted);font-size:.8rem;">@(sno++)</td>
+                            <td style="font-weight:600;">@(item.Crop?.CropName ?? "—")</td>
+                            <td>@(item.Field?.FieldName ?? "—")</td>
+                            <td>@item.ScheduledDate.ToString("dd MMM yyyy")</td>
+                            <td>@item.ExpectedYieldKg kg</td>
+                            <td>
+                                <span class="badge-pill @schBadge">@item.Status</span>
+                            </td>
+                            <td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                @(item.Notes ?? "—")
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:.3rem;flex-wrap:wrap;">
+                                    <a asp-action="Details" asp-route-id="@item.ScheduleId"
+                                       class="btn-fm btn-info-fm btn-sm-fm" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @if (item.Status == "Scheduled" && (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor")))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.ScheduleId"
+                                           class="btn-fm btn-warn-fm btn-sm-fm" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    }
+                                    @if (item.Status == "Scheduled" && (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor") || User.IsInRole("Storekeeper")))
+                                    {
+                                        <a asp-action="RecordHarvest" asp-route-id="@item.ScheduleId"
+                                           class="btn-fm btn-primary-fm btn-sm-fm" title="Record Harvest">
+                                            <i class="bi bi-basket"></i>
+                                        </a>
+                                    }
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Farmer") || User.IsInRole("FieldSupervisor"))
+                                    {
+                                        <form asp-action="Delete" asp-route-id="@item.ScheduleId"
+                                              method="post" class="d-inline delete-form">
+                                            @Html.AntiForgeryToken()
+                                            <button type="button" class="btn-fm btn-danger-fm btn-sm-fm btn-delete-schedule"
+                                                    data-name="@(item.Crop?.CropName ?? "this schedule")" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.btn-delete-schedule').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var name = this.getAttribute('data-name');
+                if (confirm('Are you sure you want to delete the schedule for "' + name + '"?')) {
+                    this.closest('form').submit();
+                }
+            });
+        });
+    </script>
+}

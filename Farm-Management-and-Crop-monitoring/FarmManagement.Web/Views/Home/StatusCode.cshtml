@@ -1,0 +1,116 @@
+@model FarmManagement.Web.Models.ViewModels.ErrorViewModel
+@{
+    ViewData["Title"] = Model.StatusCode switch
+    {
+        404 => "Page Not Found",
+        403 => "Access Denied",
+        500 => "Server Error",
+        _ => "Error"
+    };
+
+    var heading = Model.StatusCode switch
+    {
+        404 => "Page Not Found",
+        403 => "Access Denied",
+        500 => "Internal Server Error",
+        _ => "Something Went Wrong"
+    };
+
+    var message = Model.StatusCode switch
+    {
+        404 => "Looks like this field hasn't been planted yet. The page you're looking for doesn't exist or has been moved.",
+        403 => "This area of the farm is restricted. You don't have permission to access this resource.",
+        500 => "A storm hit the server! An unexpected error occurred. Please try again later.",
+        _ => "Something went wrong on the farm. Please try again."
+    };
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height:60vh;">
+    <div class="text-center" style="max-width:500px;">
+
+        <!-- Farm Illustration -->
+        <div style="margin-bottom:1.5rem;">
+            @if (Model.StatusCode == 404)
+            {
+                <!-- Broken fence / empty field -->
+                <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="70" cy="70" r="68" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+                    <rect x="25" y="85" width="90" height="4" rx="2" fill="#92400e"/>
+                    <rect x="35" y="60" width="6" height="29" rx="2" fill="#92400e"/>
+                    <rect x="60" y="55" width="6" height="34" rx="2" fill="#92400e" transform="rotate(12 63 72)"/>
+                    <rect x="85" y="60" width="6" height="29" rx="2" fill="#92400e"/>
+                    <rect x="30" y="68" width="30" height="3" rx="1" fill="#b45309"/>
+                    <rect x="80" y="68" width="20" height="3" rx="1" fill="#b45309"/>
+                    <path d="M55 50 Q58 38 65 42" stroke="#16a34a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <circle cx="55" cy="50" r="3" fill="#16a34a"/>
+                    <text x="70" y="115" text-anchor="middle" font-size="22" font-weight="800" fill="#f59e0b">404</text>
+                </svg>
+            }
+            else if (Model.StatusCode == 403)
+            {
+                <!-- Padlocked barn door -->
+                <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="70" cy="70" r="68" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+                    <path d="M40 60 L70 35 L100 60" stroke="#92400e" stroke-width="4" fill="#b45309" stroke-linejoin="round"/>
+                    <rect x="45" y="58" width="50" height="38" rx="3" fill="#d97706"/>
+                    <rect x="55" y="58" width="30" height="38" rx="2" fill="#b45309"/>
+                    <path d="M62 78 A8 8 0 1 1 78 78" stroke="#374151" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <rect x="66" y="78" width="8" height="10" rx="2" fill="#374151"/>
+                    <circle cx="70" cy="83" r="2" fill="#fbbf24"/>
+                    <text x="70" y="115" text-anchor="middle" font-size="22" font-weight="800" fill="#dc2626">403</text>
+                </svg>
+            }
+            else if (Model.StatusCode == 500)
+            {
+                <!-- Broken tractor -->
+                <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="70" cy="70" r="68" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+                    <rect x="35" y="55" width="45" height="25" rx="4" fill="#16a34a"/>
+                    <rect x="75" y="48" width="25" height="32" rx="3" fill="#15803d"/>
+                    <rect x="80" y="52" width="15" height="10" rx="2" fill="#bbf7d0"/>
+                    <circle cx="48" cy="88" r="12" fill="#374151" stroke="#1f2937" stroke-width="2"/>
+                    <circle cx="48" cy="88" r="5" fill="#6b7280"/>
+                    <circle cx="88" cy="88" r="8" fill="#374151" stroke="#1f2937" stroke-width="2"/>
+                    <circle cx="88" cy="88" r="3" fill="#6b7280"/>
+                    <path d="M30 45 L42 55" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M42 45 L30 55" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M55 38 L58 48" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M50 35 L52 45" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+                    <text x="70" y="115" text-anchor="middle" font-size="22" font-weight="800" fill="#dc2626">500</text>
+                </svg>
+            }
+            else
+            {
+                <!-- Wilted plant -->
+                <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="70" cy="70" r="68" fill="#f3f4f6" stroke="#6b7280" stroke-width="2"/>
+                    <rect x="67" y="50" width="6" height="40" rx="2" fill="#92400e"/>
+                    <path d="M70 55 Q55 45 50 55 Q55 60 70 55Z" fill="#86efac" opacity="0.6"/>
+                    <path d="M70 50 Q85 38 90 48 Q85 55 70 50Z" fill="#86efac" opacity="0.4"/>
+                    <path d="M70 62 Q58 58 55 65 Q60 68 70 62Z" fill="#bbf7d0" opacity="0.5"/>
+                    <ellipse cx="70" cy="92" rx="20" ry="4" fill="#d1d5db"/>
+                    <text x="70" y="115" text-anchor="middle" font-size="22" font-weight="800" fill="#6b7280">Error</text>
+                </svg>
+            }
+        </div>
+
+        <!-- Heading -->
+        <h2 class="fw-bold mb-2" style="color:#1a3c2b;">@heading</h2>
+
+        <!-- Message -->
+        <p class="text-muted mb-4" style="font-size:1.05rem;">@message</p>
+
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-success px-4"
+               style="border-radius:10px;">
+                <i class="bi bi-house me-2"></i>Back to Dashboard
+            </a>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary px-4"
+               style="border-radius:10px;">
+                <i class="bi bi-arrow-left me-2"></i>Go Back
+            </a>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,230 @@
+﻿<!-- Modern Professional Header -->
+<div style="
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    padding: 16px 20px;
+    border-bottom: 2px solid #238636;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    ">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #238636 0%, #2ecc71 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        ">⚡</div>
+        <div>
+            <div style="color: #2ecc71; font-weight: 700; font-size: 18px; letter-spacing: 1px;">
+                EnergyPulse
+            </div>
+            <div style="color: #8b949e; font-size: 11px; letter-spacing: 0.5px;">
+                Energy Management System
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modern Sidebar Navigation -->
+<div class="nav-scrollable" style="
+    background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+    height: calc(100vh - 72px);
+    overflow-y: auto;
+    border-right: 1px solid #30363d;
+    ">
+    <nav class="flex-column" style="padding: 20px 0;">
+
+        <!-- MAIN SECTION -->
+        <div style="padding-left: 16px; margin-bottom: 8px;">
+            <p style="
+            color: #8b949e;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin: 16px 0 12px 0;
+            ">Main</p>
+        </div>
+
+        <div class="nav-item px-3" style="margin-bottom: 8px;">
+            <NavLink class="nav-link" href="dashboard" Match="NavLinkMatch.All" style="
+                color: white;
+                padding: 12px 16px;
+                border-radius: 8px;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: all 0.3s ease;
+                " @onclick="CloseNavMenu">
+                <span style="font-size: 18px;">📊</span>
+                <span>Dashboard</span>
+            </NavLink>
+        </div>
+
+        <!-- MONITORING SECTION -->
+        <div style="padding-left: 16px; margin-bottom: 8px;">
+            <p style="
+            color: #8b949e;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin: 16px 0 12px 0;
+            ">Monitoring</p>
+        </div>
+
+        <div class="nav-item px-3" style="margin-bottom: 8px;">
+            <NavLink class="nav-link" href="alerts" style="
+                color: white;
+                padding: 12px 16px;
+                border-radius: 8px;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: all 0.3s ease;
+                " @onclick="CloseNavMenu">
+                <span style="font-size: 18px;">🚨</span>
+                <span>Alerts</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3" style="margin-bottom: 8px;">
+            <NavLink class="nav-link" href="devices" style="
+                color: white;
+                padding: 12px 16px;
+                border-radius: 8px;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: all 0.3s ease;
+                " @onclick="CloseNavMenu">
+                <span style="font-size: 18px;">⚙️</span>
+                <span>Devices</span>
+            </NavLink>
+        </div>
+
+        <!-- ANALYTICS SECTION -->
+        <div style="padding-left: 16px; margin-bottom: 8px;">
+            <p style="
+            color: #8b949e;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin: 16px 0 12px 0;
+            ">Analytics</p>
+        </div>
+
+        <div class="nav-item px-3" style="margin-bottom: 8px;">
+            <NavLink class="nav-link" href="charts" style="
+                color: white;
+                padding: 12px 16px;
+                border-radius: 8px;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: all 0.3s ease;
+                " @onclick="CloseNavMenu">
+                <span style="font-size: 18px;">📈</span>
+                <span>Charts</span>
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3" style="margin-bottom: 8px;">
+            <NavLink class="nav-link" href="report" style="
+                color: white;
+                padding: 12px 16px;
+                border-radius: 8px;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: all 0.3s ease;
+                " @onclick="CloseNavMenu">
+                <span style="font-size: 18px;">📄</span>
+                <span>Reports</span>
+            </NavLink>
+        </div>
+
+        <!-- SYSTEM SECTION -->
+        <div style="padding-left: 16px; margin-bottom: 8px; margin-top: 24px;">
+            <p style="
+            color: #8b949e;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin: 16px 0 12px 0;
+            ">System</p>
+        </div>
+
+        <!-- System Status Indicator -->
+        <div style="
+            margin: 16px;
+            padding: 12px;
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid #238636;
+            border-radius: 8px;
+            color: #2ecc71;
+            font-size: 12px;
+            ">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <div style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%;"></div>
+                <span style="font-weight: 600;">System Status: OPERATIONAL</span>
+            </div>
+            <div style="color: #8b949e; font-size: 11px;">
+                ✓ All services running normally
+            </div>
+        </div>
+    </nav>
+</div>
+
+<style>
+    .nav-link:hover {
+        background: rgba(88, 166, 255, 0.1) !important;
+        color: #58a6ff !important;
+    }
+
+    .nav-link.active {
+        background: linear-gradient(90deg, rgba(46, 204, 113, 0.15) 0%, transparent 100%);
+        border-left: 3px solid #2ecc71;
+        color: #2ecc71 !important;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public bool IsCollapsed { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsCollapsedChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnToggleSidebar { get; set; }
+
+    private bool collapseNavMenu = false;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+        // Also toggle sidebar from parent
+        OnToggleSidebar.InvokeAsync();
+    }
+
+    private void CloseNavMenu()
+    {
+        collapseNavMenu = true;
+    }
+}
