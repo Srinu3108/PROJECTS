@@ -2142,6 +2142,6 @@ C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0
 C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0\refint\EnergyPulse.UI.dll
 C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0\EnergyPulse.UI.pdb
 C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0\ref\EnergyPulse.UI.dll
-C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0\compressed\dk4oukjps7-{0}-hp5cc5ikqc-hp5cc5ikqc.gz
-C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0\compressed\mvivogahb8-{0}-8ddthr0lh8-8ddthr0lh8.gz
-C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0\compressed\c0w3t8ees3-{0}-joqvtfru1f-joqvtfru1f.gz
+C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0\compressed\dk4oukjps7-{0}-wk74g2tp1d-wk74g2tp1d.gz
+C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0\compressed\mvivogahb8-{0}-jlgb3hzkje-jlgb3hzkje.gz
+C:\Users\kanup\source\repos\PROJECTS\EnergyPulse\EnergyPulse.UI\obj\Debug\net8.0\compressed\c0w3t8ees3-{0}-3jr83ikpw3-3jr83ikpw3.gz

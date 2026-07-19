@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "EnergyPulse.UI",
   "resources": {
-    "hash": "sha256-GxpxuDoh+cKUd5CTjDHn/ZfOHJ9pCXImK948byUNlrA=",
+    "hash": "sha256-qqaqJhb8K7smeo9OQ4+XbDPmY2T0UaPv49/rBC4VzgM=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-A16ka545FHaB+QXjyJ4exXh7XpBAAIFnX8YkC4xAng8="
     },
@@ -217,10 +217,10 @@
       "mscorlib.wasm": "sha256-ovgR6YJeXMcsAhvGJVdyjhD5pU34EEAc0BGQYTUAyNk=",
       "netstandard.wasm": "sha256-90+pPOP/3NxK0buBFJlcvDw0r6Nk/i3+oM9dt2x+LPM=",
       "System.Private.CoreLib.wasm": "sha256-IXKG8p3ppN4zPjJOxht5wSXCcbFNPH6InVm7fsThBPI=",
-      "EnergyPulse.UI.wasm": "sha256-5YenH+//oycxcmiOfHxN5r9C+lx7WpLQITFwlhWb43c="
+      "EnergyPulse.UI.wasm": "sha256-oJgPEtig0V+Nh/1JnG92TO9339digNH6DjJiZcdVV8U="
     },
     "pdb": {
-      "EnergyPulse.UI.pdb": "sha256-7CU0H3JtLoVyJUgDSm65/zfVK/MO59noaLXB5pulQC8="
+      "EnergyPulse.UI.pdb": "sha256-xx+RL3N0KG1IVpHWdP2evDDeP+UNFJMDCmhfj/WQRO8="
     }
   },
   "cacheBootResources": true,
