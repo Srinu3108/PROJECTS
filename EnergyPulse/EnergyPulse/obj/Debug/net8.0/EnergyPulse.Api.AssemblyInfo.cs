@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EnergyPulse.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+134341c65d5d8179e8318f089193e784f6836b14")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+02296bcd13d41774fb8b0ceb63e32ea58aba3dcc")]
 [assembly: System.Reflection.AssemblyProductAttribute("EnergyPulse.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EnergyPulse.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
