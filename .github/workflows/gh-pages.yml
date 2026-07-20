@@ -22,6 +22,9 @@ jobs:
       run: |
         cd EnergyPulse/EnergyPulse.UI
         dotnet publish -c Release -o ./publish
+        
+    - name: List published files
+      run: ls -la ./EnergyPulse/EnergyPulse.UI/publish/wwwroot/
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
