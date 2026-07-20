@@ -4,11 +4,13 @@
 @inject AuthenticationStateProvider AuthProvider
 @inject NavigationManager Navigation
 @inject EnergyPulse.UI.Services.AuthService AuthService
+@inject IJSRuntime JS
 
 @code {
     private bool sidebarCollapsed = false;
     private bool isAuthenticated = false;
     private string username = "";
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -16,6 +18,12 @@
         var user = authState.User;
         isAuthenticated = user.Identity?.IsAuthenticated ?? false;
         username = user.Identity?.Name ?? "";
+        var redirect = await JS.InvokeAsync<string>("sessionStorage.getItem", "redirect");
+        if (!string.IsNullOrEmpty(redirect) && redirect != "/")
+        {
+            await JS.InvokeVoidAsync("sessionStorage.removeItem", "redirect");
+            Navigation.NavigateTo(redirect);
+        }
     }
 
     private void ToggleSidebar()
