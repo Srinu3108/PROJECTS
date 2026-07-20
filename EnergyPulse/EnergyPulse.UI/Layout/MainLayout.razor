@@ -22,7 +22,7 @@
         if (!string.IsNullOrEmpty(redirect) && redirect != "/")
         {
             await JS.InvokeVoidAsync("sessionStorage.removeItem", "redirect");
-            Navigation.NavigateTo(redirect);
+            Navigation.NavigateTo("/PROJECTS" + redirect);
         }
     }
 
@@ -35,7 +35,7 @@
     {
         await AuthService.Logout();
         await UpdateAuthState(); // 🔥 Refresh after logout
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo("/PROJECTS" + redirect);
     }
     // 🔥 ADD THIS METHOD - Refreshes auth state
     private async Task UpdateAuthState()
