@@ -35,7 +35,7 @@
     {
         await AuthService.Logout();
         await UpdateAuthState(); // 🔥 Refresh after logout
-        Navigation.NavigateTo("/PROJECTS/" + redirect);
+        Navigation.NavigateTo("/PROJECTS/");
     }
     // 🔥 ADD THIS METHOD - Refreshes auth state
     private async Task UpdateAuthState()
